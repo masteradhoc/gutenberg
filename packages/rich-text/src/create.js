@@ -14,6 +14,7 @@ import {
 	OBJECT_REPLACEMENT_CHARACTER,
 	ZWNBSP,
 } from './special-characters';
+import { RichTextValue } from './component';
 
 /** @typedef {import('./types').RichTextValue} RichTextValue */
 
@@ -169,7 +170,7 @@ export function create( {
 		};
 	}
 
-	if ( typeof html === 'object' ) {
+	if ( html instanceof RichTextValue ) {
 		return html;
 	}
 
