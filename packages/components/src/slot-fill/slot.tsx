@@ -16,7 +16,7 @@ import type { BaseSlotProps, SlotComponentProps } from './types';
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 /**
  * Whether the argument is a function.
@@ -69,9 +69,7 @@ class SlotComponent extends Component< SlotComponentProps > {
 	render() {
 		const { children, name, fillProps = {}, getFills } = this.props;
 
-		const fills: ( ReactElement | string )[][] = (
-			getFills( name, this ) ?? []
-		)
+		const fills: ReactNode[] = ( getFills( name, this ) ?? [] )
 			.map( ( fill ) => {
 				const fillChildren = isFunction( fill.children )
 					? fill.children( fillProps )
@@ -80,8 +78,16 @@ class SlotComponent extends Component< SlotComponentProps > {
 					if ( ! child || typeof child === 'string' ) {
 						return child;
 					}
+					let childKey: string | number = childIndex;
+					if (
+						typeof child === 'object' &&
+						'key' in child &&
+						child?.key
+					) {
+						childKey = child.key;
+					}
 
-					const childKey = child?.key || childIndex;
+					//const childKey = child?.key || childIndex;
 					return cloneElement( child as ReactElement, {
 						key: childKey,
 					} );
