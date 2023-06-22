@@ -54,7 +54,6 @@ class SlotComponent extends Component< BaseSlotComponentProps, {} > {
 		const { name, unregisterSlot, registerSlot } = this.props;
 
 		if ( prevProps.name !== name ) {
-			// TODO: Check if adding `this` works correctly. @torounit
 			unregisterSlot( prevProps.name, this );
 			registerSlot( name, this );
 		}
@@ -69,7 +68,6 @@ class SlotComponent extends Component< BaseSlotComponentProps, {} > {
 
 	render() {
 		const { children, name, fillProps = {}, getFills } = this.props;
-
 		const fills: ReactNode[] = ( getFills( name, this ) ?? [] )
 			.map( ( fill ) => {
 				const fillChildren = isFunction( fill.children )
@@ -88,7 +86,6 @@ class SlotComponent extends Component< BaseSlotComponentProps, {} > {
 						childKey = child.key;
 					}
 
-					//const childKey = child?.key || childIndex;
 					return cloneElement( child as ReactElement, {
 						key: childKey,
 					} );
