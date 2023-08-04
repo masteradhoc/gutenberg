@@ -106,6 +106,9 @@ export function useEnter( props ) {
 				) {
 					onSplitAtEnd();
 				} else if (
+					// For some blocks it's desirable to split at the end of the
+					// block when there are two line breaks at the end of the
+					// block, so triple Enter exits the block.
 					onSplitAtDoubleLineEnd &&
 					start === end &&
 					end === text.length &&
