@@ -79,7 +79,8 @@
 			}
 		},
 		"layout": {
-			"allowSizingOnChildren": true
+			"allowSizingOnChildren": true,
+			"allowSwitching": true
 		}
 	},
 	"editorStyle": "wp-block-group-editor",
