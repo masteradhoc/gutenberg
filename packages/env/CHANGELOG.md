@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Enhancement
+
+-   `wp-env` now works offline after the environment has been created. Note that many `wp-env` configuration changes involve internet connectivity and may not work in offline mode. [#53547](https://github.com/WordPress/gutenberg/pull/53547)
+
 ## 8.6.0 (2023-08-16)
 
 ## 8.5.0 (2023-08-10)
