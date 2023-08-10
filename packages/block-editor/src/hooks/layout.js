@@ -718,13 +718,12 @@ export const withChildLayoutStyles = createHigherOrderComponent(
 		const { attributes } = props;
 		const { style: { layout = {} } = {} } = attributes;
 		const { selfStretch, flexSize } = layout;
-		const hasChildLayout = selfStretch || flexSize;
+		// const hasChildLayout = selfStretch || flexSize;
 		const disableLayoutStyles = useSelect( ( select ) => {
 			const { getSettings } = select( blockEditorStore );
 			return !! getSettings().disableLayoutStyles;
 		} );
-		const shouldRenderChildLayoutStyles =
-			hasChildLayout && ! disableLayoutStyles;
+		const shouldRenderChildLayoutStyles = ! disableLayoutStyles;
 
 		const element = useContext( BlockList.__unstableElementContext );
 		const id = useInstanceId( BlockListBlock );
