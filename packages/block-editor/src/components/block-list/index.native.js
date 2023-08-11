@@ -81,6 +81,7 @@ export default function BlockList( {
 	} = useSelect(
 		( select ) => {
 			const {
+				getBlocks,
 				getBlockCount,
 				getBlockHierarchyRootClientId,
 				getBlockOrder,
@@ -98,6 +99,29 @@ export default function BlockList( {
 			// Display only block which fulfill the condition in passed `filterInnerBlocks` function.
 			if ( filterInnerBlocks ) {
 				blockOrder = filterInnerBlocks( blockOrder );
+			}
+
+			// In order to avoid deeply nested structures, try to flatten nested inner blocks.
+			const blocks = getBlocks( rootClientId );
+			const hasNestedInnerBlocks = blocks.some(
+				( item ) => item.innerBlocks?.length > 0
+			);
+			const blocksFlattened = [];
+			if ( hasNestedInnerBlocks && rootClientId !== undefined ) {
+				const flattenInnerBlocks = ( items ) =>
+					items.forEach( ( item ) => {
+						// TODO: Identify inner blocks that can be flattened based on their types and layout.
+						const canFlatten =
+							item.innerBlocks.length > 0 &&
+							// If the block is selected, we render the block as usual.
+							// Otherwise, the group blocks won't display their outline.
+							selectedBlockClientId !== item.clientId;
+						return canFlatten
+							? flattenInnerBlocks( item.innerBlocks )
+							: blocksFlattened.push( item.clientId );
+					} );
+				flattenInnerBlocks( blocks );
+				blockOrder = blocksFlattened;
 			}
 
 			const {
