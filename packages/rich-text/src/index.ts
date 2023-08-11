@@ -24,6 +24,7 @@ export { toggleFormat } from './toggle-format';
 export { LINE_SEPARATOR as __UNSTABLE_LINE_SEPARATOR } from './special-characters';
 export { unregisterFormatType } from './unregister-format-type';
 export { createElement as __unstableCreateElement } from './create-element';
+export { createRichTextString as __unstableCreateRichTextString } from './value';
 
 export { useAnchorRef } from './component/use-anchor-ref';
 export { useAnchor } from './component/use-anchor';
