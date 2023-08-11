@@ -170,7 +170,7 @@ export function create( {
 	}
 
 	if ( html instanceof String ) {
-		return html;
+		return html.value;
 	}
 
 	if ( typeof html === 'string' && html.length > 0 ) {
