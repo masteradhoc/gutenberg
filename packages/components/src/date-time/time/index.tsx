@@ -15,6 +15,7 @@ import { __ } from '@wordpress/i18n';
 import BaseControl from '../../base-control';
 import Button from '../../button';
 import ButtonGroup from '../../button-group';
+import SelectControl from '../../select-control';
 import TimeZone from './timezone';
 import type { TimePickerProps } from '../types';
 import {
@@ -24,7 +25,6 @@ import {
 	TimeSeparator,
 	MinutesInput,
 	MonthSelectWrapper,
-	MonthSelect,
 	DayInput,
 	YearInput,
 	TimeWrapper,
@@ -174,7 +174,7 @@ export function TimePicker( {
 			className="components-datetime__time-field components-datetime__time-field-day" // Unused, for backwards compatibility.
 			label={ __( 'Day' ) }
 			hideLabelFromVision
-			__next36pxDefaultSize
+			__next40pxDefaultSize
 			value={ day }
 			step={ 1 }
 			min={ 1 }
@@ -190,10 +190,11 @@ export function TimePicker( {
 
 	const monthField = (
 		<MonthSelectWrapper>
-			<MonthSelect
+			<SelectControl
 				className="components-datetime__time-field components-datetime__time-field-month" // Unused, for backwards compatibility.
 				label={ __( 'Month' ) }
 				hideLabelFromVision
+				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 				value={ month }
 				options={ [
@@ -240,7 +241,7 @@ export function TimePicker( {
 							className="components-datetime__time-field-hours-input" // Unused, for backwards compatibility.
 							label={ __( 'Hours' ) }
 							hideLabelFromVision
-							__next36pxDefaultSize
+							__next40pxDefaultSize
 							value={ hours }
 							step={ 1 }
 							min={ is12Hour ? 1 : 0 }
@@ -267,7 +268,7 @@ export function TimePicker( {
 							className="components-datetime__time-field-minutes-input" // Unused, for backwards compatibility.
 							label={ __( 'Minutes' ) }
 							hideLabelFromVision
-							__next36pxDefaultSize
+							__next40pxDefaultSize
 							value={ minutes }
 							step={ 1 }
 							min={ 0 }
@@ -294,6 +295,7 @@ export function TimePicker( {
 								variant={
 									am === 'AM' ? 'primary' : 'secondary'
 								}
+								__next40pxDefaultSize
 								onClick={ buildAmPmChangeCallback( 'AM' ) }
 							>
 								{ __( 'AM' ) }
@@ -303,6 +305,7 @@ export function TimePicker( {
 								variant={
 									am === 'PM' ? 'primary' : 'secondary'
 								}
+								__next40pxDefaultSize
 								onClick={ buildAmPmChangeCallback( 'PM' ) }
 							>
 								{ __( 'PM' ) }
@@ -338,7 +341,7 @@ export function TimePicker( {
 						className="components-datetime__time-field components-datetime__time-field-year" // Unused, for backwards compatibility.
 						label={ __( 'Year' ) }
 						hideLabelFromVision
-						__next36pxDefaultSize
+						__next40pxDefaultSize
 						value={ year }
 						step={ 1 }
 						min={ 1 }
