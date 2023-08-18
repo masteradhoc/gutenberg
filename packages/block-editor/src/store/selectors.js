@@ -2941,3 +2941,11 @@ export const getBlockEditingMode = createRegistrySelector(
 			return parentMode === 'contentOnly' ? 'default' : parentMode;
 		}
 );
+
+export function getBlockBeingRenamed( state ) {
+	return state.blockBeingRenamed;
+}
+
+export function isBlockBeingRenamed( state, clientId ) {
+	return state.blockBeingRenamed === clientId;
+}

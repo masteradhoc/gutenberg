@@ -1913,6 +1913,14 @@ export function blockEditingModes( state = new Map(), action ) {
 	return state;
 }
 
+export function blockBeingRenamed( state = null, action ) {
+	switch ( action.type ) {
+		case 'SET_BLOCK_BEING_RENAMED':
+			return action.clientId || null;
+	}
+	return state;
+}
+
 const combinedReducers = combineReducers( {
 	blocks,
 	isTyping,
@@ -1938,6 +1946,7 @@ const combinedReducers = combineReducers( {
 	blockEditingModes,
 	removalPromptData,
 	blockRemovalRules,
+	blockBeingRenamed,
 } );
 
 function withAutomaticChangeReset( reducer ) {
