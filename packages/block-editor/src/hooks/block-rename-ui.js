@@ -14,6 +14,7 @@ import {
 	Modal,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -22,6 +23,7 @@ import {
 	BlockSettingsMenuControls,
 	useBlockDisplayInformation,
 } from '../components';
+import { store as blockEditorStore } from '../store';
 
 const emptyString = ( testString ) => testString?.trim()?.length === 0;
 
@@ -87,11 +89,27 @@ function RenameModal( { blockName, originalBlockName, onClose, onSave } ) {
 }
 
 function BlockRenameControl( props ) {
-	const [ renamingBlock, setRenamingBlock ] = useState( false );
-
 	const { clientId, blockAttributes, onChange } = props;
 
 	const blockInformation = useBlockDisplayInformation( clientId );
+
+	// write a useSelect to get the block being renamed
+	const blockBeingRenamed = useSelect( ( select ) => {
+		return select( blockEditorStore ).getBlockBeingRenamed();
+	} );
+
+	// write a useDispatch to set the block being renamed
+	const { setBlockBeingRenamed } = useDispatch( blockEditorStore );
+
+	const renamingBlock = blockBeingRenamed === clientId;
+
+	const setRenamingBlock = ( isRenaming ) => {
+		if ( isRenaming ) {
+			setBlockBeingRenamed( clientId );
+		} else {
+			setBlockBeingRenamed( null );
+		}
+	};
 
 	return (
 		<>
