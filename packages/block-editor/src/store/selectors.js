@@ -2947,5 +2947,5 @@ export function getBlockBeingRenamed( state ) {
 }
 
 export function isBlockBeingRenamed( state, clientId ) {
-	return state.blockBeingRenamed === clientId;
+	return state?.blockBeingRenamed === clientId;
 }
