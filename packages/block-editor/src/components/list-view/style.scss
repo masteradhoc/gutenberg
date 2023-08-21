@@ -18,6 +18,12 @@
 	min-height: 24px !important; // force match height of block title UI.
 }
 
+.block-editor-list-view-block-node__rename-popover {
+	// Important required to overide inline positioning
+	// until such time as we can specify a horizontal offset.
+	left: -8px !important; // todo: use input padding instead.
+}
+
 .block-editor-list-view-leaf {
 	// Use position relative for row animation.
 	position: relative;

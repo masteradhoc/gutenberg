@@ -88,6 +88,7 @@ const ListViewBlockRenameUI = forwardRef(
 				resize={ true }
 				variant={ 'unstyled' }
 				animate={ false }
+				className="block-editor-list-view-block-node__rename-popover"
 			>
 				<form
 					className="block-editor-list-view-block-node__input"
