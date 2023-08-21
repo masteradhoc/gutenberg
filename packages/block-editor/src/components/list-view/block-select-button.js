@@ -19,6 +19,7 @@ import { SPACE, ENTER, BACKSPACE, DELETE } from '@wordpress/keycodes';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { __unstableUseShortcutEventMatch as useShortcutEventMatch } from '@wordpress/keyboard-shortcuts';
 import { __, sprintf } from '@wordpress/i18n';
+import { getBlockSupport } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -32,10 +33,12 @@ import { store as blockEditorStore } from '../../store';
 import useListViewImages from './use-list-view-images';
 import ListViewBlockRenameUI from './block-rename-ui';
 
+const SINGLE_CLICK = 1;
+
 function ListViewBlockSelectButton(
 	{
 		className,
-		block: { clientId, attributes: blockAttributes },
+		block: { clientId, attributes: blockAttributes, name: blockName },
 		onClick,
 		onToggleExpanded,
 		tabIndex,
@@ -93,6 +96,16 @@ function ListViewBlockSelectButton(
 	);
 
 	const { setBlockBeingRenamed } = useDispatch( blockEditorStore );
+
+	const metaDataSupport = getBlockSupport(
+		blockName,
+		'__experimentalMetadata',
+		false
+	);
+
+	const supportsBlockNaming = !! (
+		true === metaDataSupport || metaDataSupport?.name
+	);
 
 	// The `href` attribute triggers the browser's native HTML drag operations.
 	// When the link is dragged, the element's outerHTML is set in DataTransfer object as text/html.
@@ -210,7 +223,24 @@ function ListViewBlockSelectButton(
 					'block-editor-list-view-block-select-button',
 					className
 				) }
-				onClick={ onClick }
+				onClick={ ( event ) => {
+					// Avoid click delays for blocks that don't support naming interaction.
+					if ( ! supportsBlockNaming ) {
+						onClick( event );
+						return;
+					}
+
+					if ( event.detail === SINGLE_CLICK ) {
+						onClick( event );
+					}
+				} }
+				onDoubleClick={ ( event ) => {
+					event.preventDefault();
+					if ( ! supportsBlockNaming ) {
+						return;
+					}
+					setBlockBeingRenamed( clientId );
+				} }
 				onKeyDown={ onKeyDownHandler }
 				ref={ ref }
 				tabIndex={ tabIndex }
