@@ -286,7 +286,13 @@ function ListViewBlockSelectButton(
 			{ isRenamingBlock && (
 				<ListViewBlockRenameUI
 					ref={ blockNameElementRef }
-					onChange={ ( newName ) => {
+					blockTitle={ blockTitle }
+					onCancel={ () => setBlockBeingRenamed( null ) }
+					onSubmit={ ( newName ) => {
+						if ( newName === undefined ) {
+							setBlockBeingRenamed( null );
+						}
+
 						setBlockBeingRenamed( null );
 						updateBlockAttributes( clientId, {
 							// Include existing metadata (if present) to avoid overwriting existing.

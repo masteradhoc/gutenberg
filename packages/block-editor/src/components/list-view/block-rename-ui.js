@@ -12,85 +12,112 @@ import { useState, forwardRef } from '@wordpress/element';
 import { ENTER, ESCAPE } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
-const ListViewBlockRenameUI = forwardRef( ( { blockTitle, onChange }, ref ) => {
-	const inputRef = useFocusOnMount();
-	const inputDescriptionId = useInstanceId(
-		ListViewBlockRenameUI,
-		`block-editor-list-view-block-node__input-description`
-	);
+const ListViewBlockRenameUI = forwardRef(
+	( { blockTitle, onSubmit, onCancel }, ref ) => {
+		const inputRef = useFocusOnMount();
+		const inputDescriptionId = useInstanceId(
+			ListViewBlockRenameUI,
+			`block-editor-list-view-block-node__input-description`
+		);
 
-	// Local state for value of input **pre-submission**.
-	const [ inputValue, setInputValue ] = useState( blockTitle );
+		const formDescriptionId = useInstanceId(
+			ListViewBlockRenameUI,
+			`block-editor-list-view-block-node__form-description`
+		);
 
-	const onKeyDownHandler = ( event ) => {
-		// Trap events to input when editing to avoid
-		// default list view key handing (e.g. arrow
-		// keys for navigation).
-		event.stopPropagation();
+		// Local state for value of input **pre-submission**.
+		const [ inputValue, setInputValue ] = useState( blockTitle );
 
-		// Handle ENTER and ESC exits editing mode.
-		if ( event.keyCode === ENTER || event.keyCode === ESCAPE ) {
-			if ( event.keyCode === ESCAPE ) {
-				// Must be assertive to immediately announce change.
-				speak( 'Leaving edit mode', 'assertive' );
+		const onKeyDownHandler = ( event ) => {
+			// Trap events to input when editing to avoid
+			// default list view key handing (e.g. arrow
+			// keys for navigation).
+			event.stopPropagation();
+
+			// Handle ENTER and ESC exits editing mode.
+			if ( event.keyCode === ENTER || event.keyCode === ESCAPE ) {
+				if ( event.keyCode === ESCAPE ) {
+					handleCancel();
+				}
+
+				if ( event.keyCode === ENTER ) {
+					handleSubmit();
+				}
 			}
+		};
 
-			if ( event.keyCode === ENTER ) {
-				// Submit changes only for ENTER.
-				onChange( inputValue );
-				const successAnnouncement = sprintf(
-					/* translators: %s: new name/label for the block */
-					__( 'Block name updated to: "%s".' ),
-					inputValue
-				);
-				// Must be assertive to immediately announce change.
-				speak( successAnnouncement, 'assertive' );
-			}
+		const handleCancel = () => {
+			// Reset the input's local state to avoid
+			// stale values.
+			setInputValue( blockTitle );
 
-			// toggleLabelEditingMode( false );
-		}
-	};
+			onCancel();
 
-	return (
-		<Popover
-			anchorRef={ ref }
-			placement={ 'overlay' }
-			resize={ true }
-			variant={ 'unstyled' }
-		>
-			<form
-				className="block-editor-list-view-block-node__input"
-				onSubmit={ onChange }
+			// Must be assertive to immediately announce change.
+			speak( 'Leaving edit mode', 'assertive' );
+		};
+
+		const handleSubmit = () => {
+			// Submit changes only for ENTER.
+			onSubmit( inputValue );
+			const successAnnouncement = sprintf(
+				/* translators: %s: new name/label for the block */
+				__( 'Block name updated to: "%s".' ),
+				inputValue
+			);
+			// Must be assertive to immediately announce change.
+			speak( successAnnouncement, 'assertive' );
+		};
+
+		return (
+			<Popover
+				anchorRef={ ref }
+				placement={ 'overlay' }
+				resize={ true }
+				variant={ 'unstyled' }
+				animate={ false }
 			>
-				<InputControl
-					ref={ inputRef }
-					value={ inputValue }
-					label={ __( 'Edit block name' ) }
-					hideLabelFromVision
-					onChange={ ( nextValue ) => {
-						setInputValue( nextValue ?? '' );
-					} }
-					onBlur={ () => {
-						// toggleLabelEditingMode( false );
+				<form
+					className="block-editor-list-view-block-node__input"
+					onSubmit={ ( e ) => {
+						e.preventDefault();
 
-						// Reset the input's local state to avoid
-						// stale values.
-						setInputValue( blockTitle );
+						onSubmit( inputValue );
 					} }
-					onKeyDown={ onKeyDownHandler }
-					aria-describedby={ inputDescriptionId }
-					isPressEnterToChange={ true }
-				/>
-			</form>
-			<VisuallyHidden>
-				<p id={ inputDescriptionId }>
-					{ __(
-						'Press the ENTER key to submit or the ESCAPE key to cancel.'
-					) }
-				</p>
-			</VisuallyHidden>
-		</Popover>
-	);
-} );
+					aria-describedby={ formDescriptionId }
+				>
+					<VisuallyHidden>
+						<p id={ formDescriptionId }>
+							{ __( 'Choose a custom name for this block.' ) }
+						</p>
+					</VisuallyHidden>
+					<InputControl
+						ref={ inputRef }
+						value={ inputValue }
+						label={ __( 'Edit block name' ) }
+						hideLabelFromVision
+						onChange={ ( nextValue ) => {
+							setInputValue( nextValue ?? '' );
+						} }
+						onBlur={ () => {
+							// Cancel editing mode.
+							handleCancel();
+						} }
+						onKeyDown={ onKeyDownHandler }
+						aria-describedby={ inputDescriptionId }
+						required
+					/>
+					<VisuallyHidden>
+						<p id={ inputDescriptionId }>
+							{ __(
+								'Press the ENTER key to submit or the ESCAPE key to cancel.'
+							) }
+						</p>
+					</VisuallyHidden>
+				</form>
+			</Popover>
+		);
+	}
+);
 
 export default ListViewBlockRenameUI;
