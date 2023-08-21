@@ -54,7 +54,7 @@ const ListViewBlockRenameUI = forwardRef(
 			onCancel();
 
 			// Must be assertive to immediately announce change.
-			speak( 'Leaving block name edit mode', 'assertive' );
+			speak( __( 'Leaving block name edit mode' ), 'assertive' );
 		};
 
 		const handleSubmit = () => {
@@ -78,7 +78,7 @@ const ListViewBlockRenameUI = forwardRef(
 		};
 
 		useEffect( () => {
-			speak( 'Entering block name edit mode', 'assertive' );
+			speak( __( 'Entering block name edit mode' ), 'assertive' );
 		}, [] );
 
 		return (
