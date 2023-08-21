@@ -13,7 +13,7 @@ import {
 	__experimentalTruncate as Truncate,
 	Tooltip,
 } from '@wordpress/components';
-import { forwardRef } from '@wordpress/element';
+import { forwardRef, useRef } from '@wordpress/element';
 import { Icon, lockSmall as lock, pinSmall } from '@wordpress/icons';
 import { SPACE, ENTER, BACKSPACE, DELETE } from '@wordpress/keycodes';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -30,11 +30,12 @@ import ListViewExpander from './expander';
 import { useBlockLock } from '../block-lock';
 import { store as blockEditorStore } from '../../store';
 import useListViewImages from './use-list-view-images';
+import ListViewBlockRenameUI from './block-rename-ui';
 
 function ListViewBlockSelectButton(
 	{
 		className,
-		block: { clientId },
+		block: { clientId, attributes: blockAttributes },
 		onClick,
 		onToggleExpanded,
 		tabIndex,
@@ -49,6 +50,7 @@ function ListViewBlockSelectButton(
 	},
 	ref
 ) {
+	const blockNameElementRef = useRef();
 	const blockInformation = useBlockDisplayInformation( clientId );
 	const blockTitle = useBlockDisplayTitle( {
 		clientId,
@@ -64,7 +66,9 @@ function ListViewBlockSelectButton(
 		getBlocksByClientId,
 		canRemoveBlocks,
 	} = useSelect( blockEditorStore );
-	const { duplicateBlocks, removeBlocks } = useDispatch( blockEditorStore );
+	const { duplicateBlocks, removeBlocks, updateBlockAttributes } =
+		useDispatch( blockEditorStore );
+
 	const isMatch = useShortcutEventMatch();
 	const isSticky = blockInformation?.positionType === 'sticky';
 	const images = useListViewImages( { clientId, isExpanded } );
@@ -76,6 +80,19 @@ function ListViewBlockSelectButton(
 				blockInformation.positionLabel
 		  )
 		: '';
+
+	const { isRenamingBlock } = useSelect(
+		( select ) => {
+			const { isBlockBeingRenamed } = select( blockEditorStore );
+
+			return {
+				isRenamingBlock: isBlockBeingRenamed( clientId ),
+			};
+		},
+		[ clientId ]
+	);
+
+	const { setBlockBeingRenamed } = useDispatch( blockEditorStore );
 
 	// The `href` attribute triggers the browser's native HTML drag operations.
 	// When the link is dragged, the element's outerHTML is set in DataTransfer object as text/html.
@@ -218,9 +235,12 @@ function ListViewBlockSelectButton(
 					justify="flex-start"
 					spacing={ 1 }
 				>
-					<span className="block-editor-list-view-block-select-button__title">
-						<Truncate ellipsizeMode="auto">{ blockTitle }</Truncate>
-					</span>
+					<div
+						ref={ blockNameElementRef }
+						className="block-editor-list-view-block-select-button__title"
+					>
+						{ blockTitle }
+					</div>
 					{ blockInformation?.anchor && (
 						<span className="block-editor-list-view-block-select-button__anchor-wrapper">
 							<Truncate
@@ -262,6 +282,23 @@ function ListViewBlockSelectButton(
 					) }
 				</HStack>
 			</Button>
+
+			{ isRenamingBlock && (
+				<ListViewBlockRenameUI
+					ref={ blockNameElementRef }
+					onChange={ ( newName ) => {
+						setBlockBeingRenamed( null );
+						updateBlockAttributes( clientId, {
+							// Include existing metadata (if present) to avoid overwriting existing.
+							metadata: {
+								...( blockAttributes?.metadata &&
+									blockAttributes?.metadata ),
+								name: newName,
+							},
+						} );
+					} }
+				/>
+			) }
 		</>
 	);
 }

@@ -141,7 +141,7 @@ function BlockRenameControl( props ) {
 				} }
 			</BlockSettingsMenuControls>
 
-			{ renamingBlock && (
+			{ false && (
 				<RenameModal
 					blockName={
 						blockAttributes?.metadata?.name ||

@@ -11,6 +11,13 @@
 	}
 }
 
+// Render in Popover.
+// Todo: find a better way to match height and avoid important.
+.block-editor-list-view-block-node__input .components-input-control__input {
+	height: 24px !important; // force match height of block title UI.
+	min-height: 24px !important; // force match height of block title UI.
+}
+
 .block-editor-list-view-leaf {
 	// Use position relative for row animation.
 	position: relative;
@@ -301,11 +308,16 @@
 
 	.block-editor-list-view-block-select-button__label-wrapper {
 		min-width: 120px;
+
 	}
+
 
 	.block-editor-list-view-block-select-button__title {
 		flex: 1;
 		position: relative;
+		height: 24px;
+		display: flex;
+		align-items: center;
 
 		.components-truncate {
 			position: absolute;
