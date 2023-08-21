@@ -8,7 +8,7 @@ import {
 } from '@wordpress/components';
 import { speak } from '@wordpress/a11y';
 import { useInstanceId, useFocusOnMount } from '@wordpress/compose';
-import { useState, forwardRef } from '@wordpress/element';
+import { useState, forwardRef, useEffect } from '@wordpress/element';
 import { ENTER, ESCAPE } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -54,20 +54,32 @@ const ListViewBlockRenameUI = forwardRef(
 			onCancel();
 
 			// Must be assertive to immediately announce change.
-			speak( 'Leaving edit mode', 'assertive' );
+			speak( 'Leaving block name edit mode', 'assertive' );
 		};
 
 		const handleSubmit = () => {
 			// Submit changes only for ENTER.
 			onSubmit( inputValue );
-			const successAnnouncement = sprintf(
-				/* translators: %s: new name/label for the block */
-				__( 'Block name updated to: "%s".' ),
-				inputValue
-			);
+
+			let successAnnouncement;
+
+			if ( inputValue === '' ) {
+				successAnnouncement = __( 'Block name reset.' );
+			} else {
+				successAnnouncement = sprintf(
+					/* translators: %s: new name/label for the block */
+					__( 'Block name updated to: "%s".' ),
+					inputValue
+				);
+			}
+
 			// Must be assertive to immediately announce change.
 			speak( successAnnouncement, 'assertive' );
 		};
+
+		useEffect( () => {
+			speak( 'Entering block name edit mode', 'assertive' );
+		}, [] );
 
 		return (
 			<Popover
