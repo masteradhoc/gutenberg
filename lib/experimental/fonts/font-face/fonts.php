@@ -45,7 +45,7 @@ if ( ! function_exists( 'wp_print_font_faces' ) ) {
 
 add_filter(
 	'block_editor_settings_all',
-	static function( $settings ) {
+	static function ( $settings ) {
 		ob_start();
 		wp_print_font_faces();
 		$styles = ob_get_clean();

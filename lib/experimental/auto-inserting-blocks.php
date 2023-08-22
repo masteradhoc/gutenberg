@@ -22,7 +22,7 @@
  * @return callable A function that accepts a block's content and returns the content with the inserted block.
  */
 function gutenberg_auto_insert_block( $inserted_block, $relative_position, $anchor_block_type ) {
-	return function( $block ) use ( $inserted_block, $relative_position, $anchor_block_type ) {
+	return function ( $block ) use ( $inserted_block, $relative_position, $anchor_block_type ) {
 		if ( $anchor_block_type === $block['blockName'] ) {
 			if ( 'first_child' === $relative_position ) {
 				array_unshift( $block['innerBlocks'], $inserted_block );
@@ -43,7 +43,7 @@ function gutenberg_auto_insert_block( $inserted_block, $relative_position, $anch
 		$anchor_block_index = array_search( $anchor_block_type, array_column( $block['innerBlocks'], 'blockName' ), true );
 		if ( false !== $anchor_block_index && ( 'after' === $relative_position || 'before' === $relative_position ) ) {
 			if ( 'after' === $relative_position ) {
-				$anchor_block_index++;
+				++$anchor_block_index;
 			}
 			array_splice( $block['innerBlocks'], $anchor_block_index, 0, array( $inserted_block ) );
 
@@ -51,9 +51,9 @@ function gutenberg_auto_insert_block( $inserted_block, $relative_position, $anch
 			$chunk_index = 0;
 			while ( $anchor_block_index > 0 ) {
 				if ( ! is_string( $block['innerContent'][ $chunk_index ] ) ) {
-					$anchor_block_index--;
+					--$anchor_block_index;
 				}
-				$chunk_index++;
+				++$chunk_index;
 			}
 			// Since WP_Block::render() iterates over `inner_content` (rather than `inner_blocks`)
 			// when rendering blocks, we also need to insert a value (`null`, to mark a block

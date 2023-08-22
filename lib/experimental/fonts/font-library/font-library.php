@@ -34,4 +34,3 @@ function gutenberg_init_font_library() {
 }
 
 add_action( 'rest_api_init', 'gutenberg_init_font_library' );
-

@@ -949,7 +949,7 @@ class WP_HTML_Tag_Processor {
 
 			if ( '/' === $this->html[ $at + 1 ] ) {
 				$this->is_closing_tag = true;
-				$at++;
+				++$at;
 			} else {
 				$this->is_closing_tag = false;
 			}
@@ -1018,7 +1018,7 @@ class WP_HTML_Tag_Processor {
 					 *
 					 * See https://html.spec.whatwg.org/#parse-error-incorrectly-closed-comment
 					 */
-					$closer_at--; // Pre-increment inside condition below reduces risk of accidental infinite looping.
+					--$closer_at; // Pre-increment inside condition below reduces risk of accidental infinite looping.
 					while ( ++$closer_at < strlen( $html ) ) {
 						$closer_at = strpos( $html, '--', $closer_at );
 						if ( false === $closer_at ) {
@@ -1099,7 +1099,7 @@ class WP_HTML_Tag_Processor {
 			 * See https://html.spec.whatwg.org/#parse-error-missing-end-tag-name
 			 */
 			if ( '>' === $html[ $at + 1 ] ) {
-				$at++;
+				++$at;
 				continue;
 			}
 

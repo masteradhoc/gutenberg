@@ -2341,7 +2341,7 @@ class WP_Theme_JSON_Gutenberg {
 					// Prepend the variation selector to the current selector.
 					$split_selectors    = explode( ',', $shortened_selector );
 					$updated_selectors  = array_map(
-						static function( $split_selector ) use ( $clean_style_variation_selector ) {
+						static function ( $split_selector ) use ( $clean_style_variation_selector ) {
 							return $clean_style_variation_selector . $split_selector;
 						},
 						$split_selectors
@@ -2380,7 +2380,7 @@ class WP_Theme_JSON_Gutenberg {
 		$pseudo_matches = array_values(
 			array_filter(
 				$element_pseudo_allowed,
-				static function( $pseudo_selector ) use ( $selector ) {
+				static function ( $pseudo_selector ) use ( $selector ) {
 					return str_contains( $selector, $pseudo_selector );
 				}
 			)
@@ -3411,7 +3411,7 @@ class WP_Theme_JSON_Gutenberg {
 			}
 
 			if ( $below_midpoint_count < $steps_mid_point - 2 ) {
-				$x_small_count++;
+				++$x_small_count;
 			}
 
 			$slug -= 10;
@@ -3448,7 +3448,7 @@ class WP_Theme_JSON_Gutenberg {
 			}
 
 			if ( $above_midpoint_count > 1 ) {
-				$x_large_count++;
+				++$x_large_count;
 			}
 
 			$slug += 10;
@@ -3724,10 +3724,10 @@ class WP_Theme_JSON_Gutenberg {
 		$theme_vars  = static::compute_theme_vars( $settings );
 		$vars        = array_reduce(
 			array_merge( $preset_vars, $theme_vars ),
-			function( $carry, $item ) {
+			function ( $carry, $item ) {
 				$name                    = $item['name'];
 				$carry[ "var({$name})" ] = $item['value'];
-				return  $carry;
+				return $carry;
 			},
 			array()
 		);
@@ -3735,5 +3735,4 @@ class WP_Theme_JSON_Gutenberg {
 		$theme_json->theme_json['styles'] = self::convert_variables_to_value( $styles, $vars );
 		return $theme_json;
 	}
-
 }

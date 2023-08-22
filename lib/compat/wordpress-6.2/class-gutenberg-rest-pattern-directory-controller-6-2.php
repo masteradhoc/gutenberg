@@ -29,7 +29,7 @@ class Gutenberg_REST_Pattern_Directory_Controller_6_2 extends WP_REST_Pattern_Di
 		require ABSPATH . WPINC . '/version.php';
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-		$gutenberg_data = get_plugin_data( dirname( dirname( dirname( __DIR__ ) ) ) . '/gutenberg.php', false );
+		$gutenberg_data = get_plugin_data( dirname( __DIR__, 3 ) . '/gutenberg.php', false );
 
 		$valid_query_args = array(
 			'offset'   => true,
