@@ -1,3 +1,6 @@
+
+$list-view-item-content-height: $list-view-item-content-height;
+
 .block-editor-list-view-tree {
 	width: 100%;
 	border-collapse: collapse;
@@ -19,8 +22,8 @@
 	position: relative;
 
 	.components-input-control__input {
-		height: 24px !important; // force match height of block title UI.
-		min-height: 24px !important; // force match height of block title UI.
+		height: $list-view-item-content-height !important; // force match height of block title UI.
+		min-height: $list-view-item-content-height !important; // force match height of block title UI.
 	}
 
 	// Cancel focused styles as contrast is already sufficiently high.
@@ -158,7 +161,7 @@
 		align-items: center;
 		width: 100%;
 		height: auto;
-		padding: ($grid-unit-15 * 0.5) $grid-unit-05 ($grid-unit-15 * 0.5) 0;
+		padding: 2px $grid-unit-05 2px 0;
 		text-align: left;
 		border-radius: $radius-block-ui;
 		position: relative;
@@ -335,7 +338,7 @@
 	.block-editor-list-view-block-select-button__title {
 		flex: 1;
 		position: relative;
-		height: 24px;
+		height: $list-view-item-content-height;
 		display: flex;
 		align-items: center;
 
