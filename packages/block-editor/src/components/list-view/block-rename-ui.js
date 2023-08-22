@@ -5,12 +5,14 @@ import {
 	__experimentalInputControl as InputControl,
 	Popover,
 	VisuallyHidden,
+	Button,
 } from '@wordpress/components';
 import { speak } from '@wordpress/a11y';
 import { useInstanceId, useFocusOnMount } from '@wordpress/compose';
 import { useState, forwardRef, useEffect } from '@wordpress/element';
 import { ENTER, ESCAPE } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
+import { keyboardReturn, close } from '@wordpress/icons';
 
 const ListViewBlockRenameUI = forwardRef(
 	( { blockTitle, onSubmit, onCancel }, ref ) => {
@@ -64,9 +66,6 @@ const ListViewBlockRenameUI = forwardRef(
 		};
 
 		const handleSubmit = () => {
-			// Submit changes only for ENTER.
-			onSubmit( inputValue );
-
 			let successAnnouncement;
 
 			if ( inputValue === '' ) {
@@ -81,6 +80,9 @@ const ListViewBlockRenameUI = forwardRef(
 
 			// Must be assertive to immediately announce change.
 			speak( successAnnouncement, 'assertive' );
+
+			// Submit changes only for ENTER.
+			onSubmit( inputValue );
 		};
 
 		const autoSelectInputText = ( event ) => event.target.select();
@@ -100,6 +102,7 @@ const ListViewBlockRenameUI = forwardRef(
 				role="dialog"
 				aria-labelledby={ dialogTitle }
 				aria-describedby={ dialogDescription }
+				onClose={ handleCancel }
 			>
 				<VisuallyHidden>
 					<h2 id={ dialogTitle }>Rename Block</h2>
@@ -125,7 +128,7 @@ const ListViewBlockRenameUI = forwardRef(
 						} }
 						onBlur={ () => {
 							// Cancel editing mode.
-							handleCancel();
+							// handleCancel();
 						} }
 						onFocus={ autoSelectInputText }
 						onKeyDown={ onKeyDownHandler }
@@ -139,6 +142,22 @@ const ListViewBlockRenameUI = forwardRef(
 							) }
 						</p>
 					</VisuallyHidden>
+
+					<div className="block-editor-list-view-block-rename__actions">
+						<Button
+							type="submit"
+							label={ __( 'Save' ) }
+							icon={ keyboardReturn }
+							className="block-editor-list-view-block-rename__action block-editor-list-view-block-rename__action--submit"
+						/>
+						<Button
+							type="button"
+							onClick={ handleCancel }
+							label={ __( 'Cancel' ) }
+							icon={ close }
+							className="block-editor-list-view-block-rename__action block-editor-list-view-block-rename__action--cancel"
+						/>
+					</div>
 				</form>
 			</Popover>
 		);
