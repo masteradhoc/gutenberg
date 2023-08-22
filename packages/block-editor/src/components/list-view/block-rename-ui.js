@@ -15,14 +15,20 @@ import { __, sprintf } from '@wordpress/i18n';
 const ListViewBlockRenameUI = forwardRef(
 	( { blockTitle, onSubmit, onCancel }, ref ) => {
 		const inputRef = useFocusOnMount();
+
 		const inputDescriptionId = useInstanceId(
 			ListViewBlockRenameUI,
 			`block-editor-list-view-block-node__input-description`
 		);
 
-		const formDescriptionId = useInstanceId(
+		const dialogTitle = useInstanceId(
 			ListViewBlockRenameUI,
-			`block-editor-list-view-block-node__form-description`
+			`block-editor-list-view-block-rename-dialog__title`
+		);
+
+		const dialogDescription = useInstanceId(
+			ListViewBlockRenameUI,
+			`block-editor-list-view-block-rename-dialog__description`
 		);
 
 		// Local state for value of input **pre-submission**.
@@ -91,7 +97,16 @@ const ListViewBlockRenameUI = forwardRef(
 				variant={ 'unstyled' }
 				animate={ false }
 				className="block-editor-list-view-block-rename__popover"
+				role="dialog"
+				aria-labelledby={ dialogTitle }
+				aria-describedby={ dialogDescription }
 			>
+				<VisuallyHidden>
+					<h2 id={ dialogTitle }>Rename Block</h2>
+					<p id={ dialogDescription }>
+						{ __( 'Choose a custom name for this block.' ) }
+					</p>
+				</VisuallyHidden>
 				<form
 					className="block-editor-list-view-block-rename__form"
 					onSubmit={ ( e ) => {
@@ -99,13 +114,7 @@ const ListViewBlockRenameUI = forwardRef(
 
 						onSubmit( inputValue );
 					} }
-					aria-describedby={ formDescriptionId }
 				>
-					<VisuallyHidden>
-						<p id={ formDescriptionId }>
-							{ __( 'Choose a custom name for this block.' ) }
-						</p>
-					</VisuallyHidden>
 					<InputControl
 						ref={ inputRef }
 						value={ inputValue }
@@ -116,7 +125,7 @@ const ListViewBlockRenameUI = forwardRef(
 						} }
 						onBlur={ () => {
 							// Cancel editing mode.
-							handleCancel();
+							// handleCancel();
 						} }
 						onFocus={ autoSelectInputText }
 						onKeyDown={ onKeyDownHandler }
