@@ -13,16 +13,28 @@
 
 // Render in Popover.
 // Todo: find a better way to match height and avoid important.
-.block-editor-list-view-block-node__input .components-input-control__input {
-	height: 24px !important; // force match height of block title UI.
-	min-height: 24px !important; // force match height of block title UI.
+.block-editor-list-view-block-node__input {
+
+	.components-input-control__input {
+		height: 24px !important; // force match height of block title UI.
+		min-height: 24px !important; // force match height of block title UI.
+	}
+
+	// Cancel focused styles as contrast is already sufficiently high.
+	.components-input-control__backdrop {
+		box-shadow: none !important;
+		border-color: initial !important;
+	}
+
 }
+
 
 .block-editor-list-view-block-node__rename-popover {
 	// Important required to overide inline positioning
 	// until such time as we can specify a horizontal offset.
 	left: -8px !important; // todo: use input padding instead.
 }
+
 
 .block-editor-list-view-leaf {
 	// Use position relative for row animation.
