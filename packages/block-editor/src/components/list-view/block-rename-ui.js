@@ -125,7 +125,7 @@ const ListViewBlockRenameUI = forwardRef(
 						} }
 						onBlur={ () => {
 							// Cancel editing mode.
-							// handleCancel();
+							handleCancel();
 						} }
 						onFocus={ autoSelectInputText }
 						onKeyDown={ onKeyDownHandler }
