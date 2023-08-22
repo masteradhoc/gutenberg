@@ -243,7 +243,7 @@
  *
  * @since 6.2.0
  */
-class Gutenberg_HTML_Tag_Processor_6_3 {
+class Gutenberg_HTML_Tag_Processor_6_4 {
 	/**
 	 * The maximum number of bookmarks allowed to exist at
 	 * any given time.
