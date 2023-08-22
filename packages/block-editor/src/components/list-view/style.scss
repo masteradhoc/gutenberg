@@ -11,9 +11,12 @@
 	}
 }
 
+
 // Render in Popover.
 // Todo: find a better way to match height and avoid important.
-.block-editor-list-view-block-node__input {
+.block-editor-list-view-block-rename__form {
+
+	position: relative;
 
 	.components-input-control__input {
 		height: 24px !important; // force match height of block title UI.
@@ -25,11 +28,10 @@
 		box-shadow: none !important;
 		border-color: initial !important;
 	}
-
 }
 
 
-.block-editor-list-view-block-node__rename-popover {
+.block-editor-list-view-block-rename__popover {
 	// Important required to overide inline positioning
 	// until such time as we can specify a horizontal offset.
 	left: -8px !important; // todo: use input padding instead.

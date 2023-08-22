@@ -90,10 +90,10 @@ const ListViewBlockRenameUI = forwardRef(
 				resize={ true }
 				variant={ 'unstyled' }
 				animate={ false }
-				className="block-editor-list-view-block-node__rename-popover"
+				className="block-editor-list-view-block-rename__popover"
 			>
 				<form
-					className="block-editor-list-view-block-node__input"
+					className="block-editor-list-view-block-rename__form"
 					onSubmit={ ( e ) => {
 						e.preventDefault();
 
