@@ -77,6 +77,8 @@ const ListViewBlockRenameUI = forwardRef(
 			speak( successAnnouncement, 'assertive' );
 		};
 
+		const autoSelectInputText = ( event ) => event.target.select();
+
 		useEffect( () => {
 			speak( __( 'Entering block name edit mode' ), 'assertive' );
 		}, [] );
@@ -116,6 +118,7 @@ const ListViewBlockRenameUI = forwardRef(
 							// Cancel editing mode.
 							handleCancel();
 						} }
+						onFocus={ autoSelectInputText }
 						onKeyDown={ onKeyDownHandler }
 						aria-describedby={ inputDescriptionId }
 						required
