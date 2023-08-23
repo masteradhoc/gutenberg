@@ -126,10 +126,6 @@ const ListViewBlockRenameUI = forwardRef(
 						onChange={ ( nextValue ) => {
 							setInputValue( nextValue ?? '' );
 						} }
-						onBlur={ () => {
-							// Cancel editing mode.
-							// handleCancel();
-						} }
 						onFocus={ autoSelectInputText }
 						onKeyDown={ onKeyDownHandler }
 						aria-describedby={ inputDescriptionId }
