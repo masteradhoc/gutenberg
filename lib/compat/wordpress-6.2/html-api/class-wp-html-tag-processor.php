@@ -2251,11 +2251,8 @@ class WP_HTML_Tag_Processor {
 			 * See https://html.spec.whatwg.org/#attributes-3
 			 * See https://html.spec.whatwg.org/#space-separated-tokens
 			 */
-			while ( true ) {
+			do {
 				$class_at = strpos( $this->html, $this->sought_class_name, $class_at );
-				if ( false === $class_at || $class_at >= $class_end ) {
-					break;
-				}
 
 				/*
 				 * Verify this class starts at a boundary.
@@ -2282,7 +2279,7 @@ class WP_HTML_Tag_Processor {
 				}
 
 				return true;
-			}
+			} while ( false !== $class_at && $class_at < $class_end );
 
 			return false;
 		}
