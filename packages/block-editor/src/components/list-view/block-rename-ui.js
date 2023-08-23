@@ -94,9 +94,9 @@ const ListViewBlockRenameUI = forwardRef(
 		return (
 			<Popover
 				anchorRef={ ref }
-				placement={ 'overlay' }
+				placement="overlay"
 				resize={ true }
-				variant={ 'unstyled' }
+				variant="unstyled"
 				animate={ false }
 				className="block-editor-list-view-block-rename__popover"
 				role="dialog"

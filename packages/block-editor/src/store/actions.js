@@ -1925,10 +1925,3 @@ export function unsetBlockEditingMode( clientId = '' ) {
 		clientId,
 	};
 }
-
-export function setBlockBeingRenamed( clientId = '' ) {
-	return {
-		type: 'SET_BLOCK_BEING_RENAMED',
-		clientId,
-	};
-}

@@ -6,7 +6,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { hasBlockSupport } from '@wordpress/blocks';
+import { hasBlockSupport, getBlockSupport } from '@wordpress/blocks';
 import {
 	Button,
 	__experimentalHStack as HStack,
@@ -19,7 +19,6 @@ import { SPACE, ENTER, BACKSPACE, DELETE } from '@wordpress/keycodes';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { __unstableUseShortcutEventMatch as useShortcutEventMatch } from '@wordpress/keyboard-shortcuts';
 import { __, sprintf } from '@wordpress/i18n';
-import { getBlockSupport } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -29,9 +28,10 @@ import useBlockDisplayInformation from '../use-block-display-information';
 import useBlockDisplayTitle from '../block-title/use-block-display-title';
 import ListViewExpander from './expander';
 import { useBlockLock } from '../block-lock';
-import { store as blockEditorStore } from '../../store';
 import useListViewImages from './use-list-view-images';
 import ListViewBlockRenameUI from './block-rename-ui';
+import { store as blockEditorStore } from '../../store';
+import { unlock } from '../../lock-unlock';
 
 const SINGLE_CLICK = 1;
 
@@ -86,7 +86,9 @@ function ListViewBlockSelectButton(
 
 	const { isRenamingBlock } = useSelect(
 		( select ) => {
-			const { isBlockBeingRenamed } = select( blockEditorStore );
+			const { isBlockBeingRenamed } = unlock(
+				select( blockEditorStore )
+			);
 
 			return {
 				isRenamingBlock: isBlockBeingRenamed( clientId ),
@@ -95,7 +97,7 @@ function ListViewBlockSelectButton(
 		[ clientId ]
 	);
 
-	const { setBlockBeingRenamed } = useDispatch( blockEditorStore );
+	const { setBlockBeingRenamed } = unlock( useDispatch( blockEditorStore ) );
 
 	const metaDataSupport = getBlockSupport(
 		blockName,

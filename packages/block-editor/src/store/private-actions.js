@@ -259,3 +259,16 @@ export function setBlockRemovalRules( rules = false ) {
 		rules,
 	};
 }
+
+/**
+ * Sets the block that is currently being renamed.
+ *
+ * @param {string} clientId The block client ID.
+ * @return {Object} Action object.
+ */
+export function setBlockBeingRenamed( clientId = '' ) {
+	return {
+		type: 'SET_BLOCK_BEING_RENAMED',
+		clientId,
+	};
+}

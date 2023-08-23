@@ -13,16 +13,17 @@ import { useSelect, useDispatch } from '@wordpress/data';
  */
 import { BlockSettingsMenuControls } from '../components';
 import { store as blockEditorStore } from '../store';
+import { unlock } from '../lock-unlock';
 
 function BlockRenameControl( props ) {
 	const { clientId } = props;
 
 	// write a useSelect to get the block being renamed
 	const blockBeingRenamed = useSelect( ( select ) => {
-		return select( blockEditorStore ).getBlockBeingRenamed();
+		return unlock( select( blockEditorStore ) ).getBlockBeingRenamed();
 	} );
 
-	const { setBlockBeingRenamed } = useDispatch( blockEditorStore );
+	const { setBlockBeingRenamed } = unlock( useDispatch( blockEditorStore ) );
 
 	const renamingBlock = blockBeingRenamed === clientId;
 

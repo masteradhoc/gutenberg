@@ -139,3 +139,24 @@ export function getRemovalPromptData( state ) {
 export function getBlockRemovalRules( state ) {
 	return state.blockRemovalRules;
 }
+
+/**
+ * Returns the client ID of the block being renamed, or undefined if no block.
+ *
+ * @param {Object} state Global application state.
+ * @return {string|undefined} The client ID of the block being renamed.
+ */
+export function getBlockBeingRenamed( state ) {
+	return state.blockBeingRenamed;
+}
+
+/**
+ * Returns whether the given block is currently being renamed.
+ *
+ * @param {Object} state    Global application state.
+ * @param {string} clientId the client ID of the block to test against.
+ * @return {boolean} Whether the given block is being renamed.
+ */
+export function isBlockBeingRenamed( state, clientId ) {
+	return state?.blockBeingRenamed === clientId;
+}

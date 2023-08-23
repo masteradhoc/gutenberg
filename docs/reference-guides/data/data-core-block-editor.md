@@ -196,10 +196,6 @@ _Returns_
 
 -   `Object?`: Block attributes.
 
-### getBlockBeingRenamed
-
-Undocumented declaration.
-
 ### getBlockCount
 
 Returns the number of blocks currently present in the post.
@@ -956,10 +952,6 @@ _Returns_
 
 -   `boolean`: Whether the block is being dragged.
 
-### isBlockBeingRenamed
-
-Undocumented declaration.
-
 ### isBlockHighlighted
 
 Returns true if the current highlighted block matches the block clientId.
@@ -1590,10 +1582,6 @@ _Parameters_
 
 -   _clientId_ `string`: Block client ID.
 -   _fallbackToParent_ `boolean`: If true, select the first parent if there is no previous block.
-
-### setBlockBeingRenamed
-
-Undocumented declaration.
 
 ### setBlockEditingMode
 
