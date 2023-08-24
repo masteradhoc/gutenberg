@@ -106,16 +106,18 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 	/**
 	 * Cleans up the environment after tests are executed.
 	 */
-	static function tearDownAfterClass() {
+	public static function tearDownAfterClass() {
 		$GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] = self::$original_ruleset;
 		self::$original_ruleset                           = null;
 		parent::tearDownAfterClass();
 	}
 
 	/**
-	 * @param $testFileBase
+	 * Get a list of all test files to check.
 	 *
-	 * @return string[] Contains a list of files that the current sniff will be tested on.
+	 * @param $testFileBase The base path that the unit tests files will have.
+	 *
+	 * @return string[]
 	 */
 	protected function getTestFiles( $testFileBase ) {
 		return array(
