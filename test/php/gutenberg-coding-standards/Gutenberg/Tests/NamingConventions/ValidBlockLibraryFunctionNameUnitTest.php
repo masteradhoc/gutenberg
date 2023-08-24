@@ -70,7 +70,7 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 		parent::setCliValues( $filename, $config );
 
 		if ( ! isset( $GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] )
-			 || ( ! $GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] instanceof Ruleset )
+		|| ( ! $GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] instanceof Ruleset )
 		) {
 			throw new \RuntimeException( 'Cannot set ruleset parameters required for this test.' );
 		}
@@ -78,12 +78,11 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 		// Backup the original Ruleset instance.
 		self::$original_ruleset = $GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'];
 
-		/** @var Ruleset $current_ruleset */
 		$current_ruleset                                  = clone self::$original_ruleset;
 		$GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] = $current_ruleset;
 
 		if ( ! isset( $current_ruleset->sniffs[ ValidBlockLibraryFunctionNameSniff::class ] )
-			 || ( ! $current_ruleset->sniffs[ ValidBlockLibraryFunctionNameSniff::class ] instanceof ValidBlockLibraryFunctionNameSniff )
+		|| ( ! $current_ruleset->sniffs[ ValidBlockLibraryFunctionNameSniff::class ] instanceof ValidBlockLibraryFunctionNameSniff )
 		) {
 			throw new \RuntimeException( 'Cannot set ruleset parameters required for this test.' );
 		}

@@ -47,7 +47,7 @@
 			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf"
 		],
 		"run-tests": [
-			"@php ./vendor/phpunit/phpunit/phpunit --filter Gutenberg --bootstrap=\"./vendor/squizlabs/php_codesniffer/tests/bootstrap.php\" ./vendor/squizlabs/php_codesniffer/tests/AllTests.php"
+			"@php ./vendor/phpunit/phpunit/phpunit --filter Gutenberg ./vendor/squizlabs/php_codesniffer/tests/AllTests.php --no-coverage"
 		],
 		"check-all": [
 			"@lint",
