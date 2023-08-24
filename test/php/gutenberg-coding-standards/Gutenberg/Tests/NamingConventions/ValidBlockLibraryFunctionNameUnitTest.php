@@ -20,13 +20,6 @@ use PHP_CodeSniffer\Ruleset;
 final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest {
 
 	/**
-	 * Represents the ruleset code for the specific sniff being tested.
-	 *
-	 * @var string
-	 */
-	const SNIFF_CODE = 'Gutenberg.NamingConventions.ValidBlockLibraryFunctionName';
-
-	/**
 	 * Holds the original Ruleset instance.
 	 *
 	 * @var Ruleset
