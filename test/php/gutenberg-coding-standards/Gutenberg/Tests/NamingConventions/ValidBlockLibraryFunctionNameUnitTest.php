@@ -18,6 +18,11 @@ use PHP_CodeSniffer\Ruleset;
  */
 final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest {
 
+	/**
+	 * Represents the ruleset code for the specific sniff being tested.
+	 *
+	 * @var string
+	 */
 	const SNIFF_CODE = 'Gutenberg.NamingConventions.ValidBlockLibraryFunctionName';
 
 	/**
@@ -25,7 +30,7 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 	 *
 	 * @var Ruleset
 	 */
-	private static $orignial_ruleset;
+	private static $original_ruleset;
 
 	/**
 	 * Returns the lines where errors should occur.
@@ -68,10 +73,10 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 			throw new \RuntimeException( 'Cannot set ruleset parameters required for this test.' );
 		}
 
-		// Backup original Ruleset instance, not the cloned one.
-		self::$orignial_ruleset = $GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'];
+		// Backup the original Ruleset instance.
+		self::$original_ruleset = $GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'];
 
-		$current_ruleset                                  = clone self::$orignial_ruleset;
+		$current_ruleset                                  = clone self::$original_ruleset;
 		$GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] = $current_ruleset;
 
 		$prefixes = array(
@@ -102,8 +107,8 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 	 * Cleans up the environment after tests are executed.
 	 */
 	static function tearDownAfterClass() {
-		$GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] = self::$orignial_ruleset;
-		self::$orignial_ruleset                           = null;
+		$GLOBALS['PHP_CODESNIFFER_RULESETS']['Gutenberg'] = self::$original_ruleset;
+		self::$original_ruleset                           = null;
 		parent::tearDownAfterClass();
 	}
 
