@@ -82,7 +82,7 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 		$prefixes = array(
 			'block_core_',
 			'render_block_core_',
-			'register_block_core_'
+			'register_block_core_',
 		);
 
 		$current_ruleset->ruleset[ self::SNIFF_CODE ]['properties']['prefixes'] = $prefixes;
@@ -96,9 +96,9 @@ final class ValidBlockLibraryFunctionNameUnitTest extends AbstractSniffUnitTest 
 	private static function make_ruleset() {
 		$config            = new Config();
 		$config->cache     = false;
-		$config->standards = [ 'Gutenberg' ];
-		$config->sniffs    = [ self::SNIFF_CODE ];
-		$config->ignored   = [];
+		$config->standards = array( 'Gutenberg' );
+		$config->sniffs    = array( self::SNIFF_CODE );
+		$config->ignored   = array();
 
 		return new Ruleset( $config );
 	}
