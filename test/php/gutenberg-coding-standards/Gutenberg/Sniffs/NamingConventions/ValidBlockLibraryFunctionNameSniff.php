@@ -114,18 +114,17 @@ final class ValidBlockLibraryFunctionNameSniff implements Sniff {
 		$parent_directory_name = basename( dirname( $phpcsFile->getFilename() ) );
 
 		$allowed_function_prefixes = array();
-		$is_function_name_valid    = false;
 		foreach ( $this->prefixes as $prefix ) {
 			$prefix                      = rtrim( $prefix, '_' );
 			$allowed_function_prefix     = $prefix . '_' . self::sanitize_directory_name( $parent_directory_name );
 			$allowed_function_prefixes[] = $allowed_function_prefix;
 			// Validate the name's correctness and ensure it does not end with an underscore.
 			$regexp                  = sprintf( '/^%s(|_.+)$/', preg_quote( $allowed_function_prefix, '/' ) );
-			$is_function_name_valid |= ( 1 === preg_match( $regexp, $function_name ) );
-		}
 
-		if ( $is_function_name_valid ) {
-			return;
+			if ( 1 === preg_match( $regexp, $function_name ) ) {
+				// The function has a valid prefix; bypassing further checks.
+				return;
+			}
 		}
 
 		$error_message = "The function name `{$function_name}()` is invalid because PHP function names in this file should start with one of the following prefixes: `"
