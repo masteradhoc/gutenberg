@@ -73,14 +73,7 @@ export function attributesFromMedia( setAttributes, dimRatio ) {
 			mediaType = media.type;
 		}
 
-		let customOverlayColor = await getAverageMediaColor( media.url );
-		/*eslint no-bitwise: ["error", { "allow": ["|","<<"] }] */
-		customOverlayColor = customOverlayColor
-			? '#' +
-			  ( customOverlayColor.r | ( 1 << 8 ) ).toString( 16 ).slice( 1 ) +
-			  ( customOverlayColor.g | ( 1 << 8 ) ).toString( 16 ).slice( 1 ) +
-			  ( customOverlayColor.b | ( 1 << 8 ) ).toString( 16 ).slice( 1 )
-			: customOverlayColor;
+		const customOverlayColor = await getAverageMediaColor( media.url );
 
 		setAttributes( {
 			isDark,
@@ -219,9 +212,7 @@ export async function getAverageMediaColor( url ) {
 				undefined,
 				url
 			);
-			const {
-				value: [ r, g, b, a ],
-			} = await retrieveFastAverageColor().getColorAsync( url, {
+			const color = await retrieveFastAverageColor().getColorAsync( url, {
 				// Previously the default color was white, but that changed
 				// in v6.0.0 so it has to be manually set now.
 				defaultColor: [ 255, 255, 255, 255 ],
@@ -231,7 +222,7 @@ export async function getAverageMediaColor( url ) {
 				crossOrigin: imgCrossOrigin,
 			} );
 			// FAC uses 0-255 for alpha, but colord expects 0-1.
-			return { r, g, b, a: a / 255 };
+			return color.hex;
 		} catch ( error ) {
 			// If there's an error, just assume the image is dark.
 			return false;
