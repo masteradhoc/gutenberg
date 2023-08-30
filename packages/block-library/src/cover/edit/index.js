@@ -158,7 +158,7 @@ function CoverEdit( {
 			dimRatio,
 			overlayColor.color
 		);
-		setMedia( newMedia, isDarkSetting );
+		await setMedia( newMedia, isDarkSetting );
 	};
 
 	const onClearMedia = async () => {

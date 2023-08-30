@@ -42,7 +42,7 @@ export function dimRatioToClass( ratio ) {
 }
 
 export function attributesFromMedia( setAttributes, dimRatio ) {
-	return ( media, isDark ) => {
+	return async ( media, isDark ) => {
 		if ( ! media || ! media.url ) {
 			setAttributes( { url: undefined, id: undefined, isDark } );
 			return;
@@ -73,12 +73,22 @@ export function attributesFromMedia( setAttributes, dimRatio ) {
 			mediaType = media.type;
 		}
 
+		let customOverlayColor = await getAverageMediaColor( media.url );
+		/*eslint no-bitwise: ["error", { "allow": ["|","<<"] }] */
+		customOverlayColor = customOverlayColor
+			? '#' +
+			  ( customOverlayColor.r | ( 1 << 8 ) ).toString( 16 ).slice( 1 ) +
+			  ( customOverlayColor.g | ( 1 << 8 ) ).toString( 16 ).slice( 1 ) +
+			  ( customOverlayColor.b | ( 1 << 8 ) ).toString( 16 ).slice( 1 )
+			: customOverlayColor;
+
 		setAttributes( {
 			isDark,
 			dimRatio: dimRatio === 100 ? 50 : dimRatio,
 			url: media.url,
 			id: media.id,
 			alt: media?.alt,
+			customOverlayColor,
 			backgroundType: mediaType,
 			focalPoint: undefined,
 			...( mediaType === VIDEO_BACKGROUND_TYPE
@@ -199,4 +209,33 @@ export async function getCoverIsDark( url, dimRatio = 50, overlayColor ) {
 	const background = { r: 255, g: 255, b: 255, a: 1 };
 	const composite = compositeSourceOver( overlay, background );
 	return colord( composite ).isDark();
+}
+
+export async function getAverageMediaColor( url ) {
+	if ( url ) {
+		try {
+			const imgCrossOrigin = applyFilters(
+				'media.crossOrigin',
+				undefined,
+				url
+			);
+			const {
+				value: [ r, g, b, a ],
+			} = await retrieveFastAverageColor().getColorAsync( url, {
+				// Previously the default color was white, but that changed
+				// in v6.0.0 so it has to be manually set now.
+				defaultColor: [ 255, 255, 255, 255 ],
+				// Errors that come up don't reject the promise, so error
+				// logging has to be silenced with this option.
+				silent: process.env.NODE_ENV === 'production',
+				crossOrigin: imgCrossOrigin,
+			} );
+			// FAC uses 0-255 for alpha, but colord expects 0-1.
+			return { r, g, b, a: a / 255 };
+		} catch ( error ) {
+			// If there's an error, just assume the image is dark.
+			return false;
+		}
+	}
+	return false;
 }
