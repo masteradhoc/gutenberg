@@ -204,35 +204,43 @@ export const getEntityRecords =
 			{ exclusive: false }
 		);
 
+		let queryArgs = !! entityConfig.getQueryArgs
+			? entityConfig.getQueryArgs( query )
+			: query;
+
 		try {
-			if ( query._fields ) {
+			if ( queryArgs._fields ) {
 				// If requesting specific fields, items and query association to said
 				// records are stored by ID reference. Thus, fields must always include
 				// the ID.
-				query = {
-					...query,
+				queryArgs = {
+					...queryArgs,
 					_fields: [
 						...new Set( [
-							...( getNormalizedCommaSeparable( query._fields ) ||
-								[] ),
+							...( getNormalizedCommaSeparable(
+								queryArgs._fields
+							) || [] ),
 							entityConfig.key || DEFAULT_ENTITY_KEY,
 						] ),
 					].join(),
 				};
 			}
 
-			const path = addQueryArgs( entityConfig.baseURL, {
+			const baseUrl = !! entityConfig.getBaseUrl
+				? entityConfig.getBaseUrl( query )
+				: entityConfig.baseURL;
+			const path = addQueryArgs( baseUrl, {
 				...entityConfig.baseURLParams,
-				...query,
+				...queryArgs,
 			} );
 
 			let records = Object.values( await apiFetch( { path } ) );
 			// If we request fields but the result doesn't contain the fields,
 			// explicitly set these fields as "undefined"
 			// that way we consider the query "fullfilled".
-			if ( query._fields ) {
+			if ( queryArgs._fields ) {
 				records = records.map( ( record ) => {
-					query._fields.split( ',' ).forEach( ( field ) => {
+					queryArgs._fields.split( ',' ).forEach( ( field ) => {
 						if ( ! record.hasOwnProperty( field ) ) {
 							record[ field ] = undefined;
 						}
@@ -247,7 +255,7 @@ export const getEntityRecords =
 			// When requesting all fields, the list of results can be used to
 			// resolve the `getEntityRecord` selector in addition to `getEntityRecords`.
 			// See https://github.com/WordPress/gutenberg/pull/26575
-			if ( ! query?._fields && ! query.context ) {
+			if ( ! queryArgs?._fields && ! queryArgs.context ) {
 				const key = entityConfig.key || DEFAULT_ENTITY_KEY;
 				const resolutionsArgs = records
 					.filter( ( record ) => record[ key ] )
