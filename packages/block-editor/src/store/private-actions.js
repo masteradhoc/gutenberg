@@ -259,3 +259,16 @@ export function setBlockRemovalRules( rules = false ) {
 		rules,
 	};
 }
+
+/**
+ * Sets the client ID of the block menu that is currently open.
+ *
+ * @param {string} clientId The block client ID.
+ * @return {Object} Action object.
+ */
+export function setOpenedBlockMenu( clientId = '' ) {
+	return {
+		type: 'SET_OPENED_BLOCK_MENU',
+		clientId,
+	};
+}

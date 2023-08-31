@@ -31,6 +31,7 @@ import BlockHTMLConvertButton from './block-html-convert-button';
 import __unstableBlockSettingsMenuFirstItem from './block-settings-menu-first-item';
 import BlockSettingsMenuControls from '../block-settings-menu-controls';
 import { store as blockEditorStore } from '../../store';
+import { unlock } from '../../lock-unlock';
 import { useShowHoveredOrFocusedGestures } from '../block-toolbar/utils';
 
 const POPOVER_PROPS = {
@@ -47,6 +48,7 @@ function CopyMenuItem( { blocks, onCopy, label } ) {
 }
 
 export function BlockSettingsDropdown( {
+	block,
 	clientIds,
 	__experimentalSelectBlock,
 	children,
@@ -54,6 +56,9 @@ export function BlockSettingsDropdown( {
 	__unstableDisplayLocation,
 	...props
 } ) {
+	// Get the client id of the current block for this menu, if one is set.
+	const currentClientId = block?.clientId;
+
 	const blockClientIds = Array.isArray( clientIds )
 		? clientIds
 		: [ clientIds ];
@@ -102,6 +107,15 @@ export function BlockSettingsDropdown( {
 	);
 	const { getBlockOrder, getSelectedBlockClientIds } =
 		useSelect( blockEditorStore );
+
+	const { openedBlockMenu } = useSelect( ( select ) => {
+		const { getOpenedBlockMenu } = unlock( select( blockEditorStore ) );
+		return {
+			openedBlockMenu: getOpenedBlockMenu(),
+		};
+	} );
+
+	const { setOpenedBlockMenu } = unlock( useDispatch( blockEditorStore ) );
 
 	const shortcuts = useSelect( ( select ) => {
 		const { getShortcutRepresentation } = select( keyboardShortcutsStore );
@@ -175,6 +189,23 @@ export function BlockSettingsDropdown( {
 	const parentBlockIsSelected =
 		selectedBlockClientIds?.includes( firstParentClientId );
 
+	// Only override the isOpen prop if the current block is not the one that
+	// opened the menu. The logic here is only to ensure that non-current
+	// block menus are automatically closed when a new block menu is opened.
+	const isOpen =
+		! currentClientId || openedBlockMenu === currentClientId
+			? undefined
+			: false;
+
+	const onToggle = useCallback(
+		( localIsOpen ) => {
+			if ( localIsOpen ) {
+				setOpenedBlockMenu( currentClientId );
+			}
+		},
+		[ currentClientId, setOpenedBlockMenu ]
+	);
+
 	return (
 		<BlockActions
 			clientIds={ clientIds }
@@ -199,6 +230,8 @@ export function BlockSettingsDropdown( {
 					icon={ moreVertical }
 					label={ __( 'Options' ) }
 					className="block-editor-block-settings-menu"
+					isOpen={ isOpen }
+					onToggle={ onToggle }
 					popoverProps={ { ...POPOVER_PROPS, ...popoverProps } }
 					noIcons
 					menuProps={ {
