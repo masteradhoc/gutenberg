@@ -215,7 +215,7 @@ export async function getAverageMediaColor( url ) {
 			const color = await retrieveFastAverageColor().getColorAsync( url, {
 				// Previously the default color was white, but that changed
 				// in v6.0.0 so it has to be manually set now.
-				defaultColor: [ 255, 255, 255, 255 ],
+				defaultColor: [ 0, 0, 0, 255 ],
 				// Errors that come up don't reject the promise, so error
 				// logging has to be silenced with this option.
 				silent: process.env.NODE_ENV === 'production',
@@ -225,7 +225,7 @@ export async function getAverageMediaColor( url ) {
 			return color.hex;
 		} catch ( error ) {
 			// If there's an error, just assume the image is dark.
-			return false;
+			return undefined;
 		}
 	}
 	return false;
