@@ -73,10 +73,10 @@ export function attributesFromMedia( setAttributes, dimRatio ) {
 			mediaType = media.type;
 		}
 
-		const customOverlayColor = await getAverageMediaColor( media.url );
-
 		// Only pass the url to getCoverIsDark if the media is an image as video is not handled.
 		const newUrl = media?.type === 'image' ? media.url : undefined;
+		const customOverlayColor = await getAverageMediaColor( newUrl );
+
 		const isDark = await getCoverIsDark(
 			newUrl,
 			dimRatio,
@@ -237,5 +237,5 @@ export async function getAverageMediaColor( url ) {
 			return undefined;
 		}
 	}
-	return false;
+	return undefined;
 }
