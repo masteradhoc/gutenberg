@@ -42,7 +42,7 @@ export function dimRatioToClass( ratio ) {
 }
 
 export function attributesFromMedia( setAttributes, dimRatio ) {
-	return async ( media, isDark ) => {
+	return async ( media ) => {
 		if ( ! media || ! media.url ) {
 			setAttributes( { url: undefined, id: undefined, isDark } );
 			return;
@@ -75,12 +75,21 @@ export function attributesFromMedia( setAttributes, dimRatio ) {
 
 		const customOverlayColor = await getAverageMediaColor( media.url );
 
+		// Only pass the url to getCoverIsDark if the media is an image as video is not handled.
+		const newUrl = media?.type === 'image' ? media.url : undefined;
+		const isDark = await getCoverIsDark(
+			newUrl,
+			dimRatio,
+			customOverlayColor
+		);
+
 		setAttributes( {
 			isDark,
 			dimRatio: dimRatio === 100 ? 50 : dimRatio,
 			url: media.url,
 			id: media.id,
 			alt: media?.alt,
+			overlayColor: undefined,
 			customOverlayColor,
 			backgroundType: mediaType,
 			focalPoint: undefined,
