@@ -9,7 +9,7 @@ import namesPlugin from 'colord/plugins/names';
  * WordPress dependencies
  */
 import { useEntityProp, store as coreStore } from '@wordpress/core-data';
-import { useEffect, useMemo, useRef } from '@wordpress/element';
+import { useMemo, useRef, useState } from '@wordpress/element';
 import { Placeholder, Spinner } from '@wordpress/components';
 import { compose, useResizeObserver } from '@wordpress/compose';
 import {
@@ -38,6 +38,7 @@ import {
 	getPositionClassName,
 	mediaPosition,
 	getCoverIsDark,
+	getAverageMediaColor,
 } from '../shared';
 import CoverInspectorControls from './inspector-controls';
 import CoverBlockControls from './block-controls';
@@ -97,6 +98,8 @@ function CoverEdit( {
 		tagName: TagName = 'div',
 	} = attributes;
 
+	const [ averageMediaColor, setAverageMediaColor ] = useState( undefined );
+
 	const [ featuredImage ] = useEntityProp(
 		'postType',
 		postType,
@@ -113,26 +116,6 @@ function CoverEdit( {
 		[ featuredImage ]
 	);
 	const mediaUrl = media?.source_url;
-
-	useEffect( () => {
-		async function setIsDark() {
-			__unstableMarkNextChangeAsNotPersistent();
-			const isDarkSetting = await getCoverIsDark(
-				mediaUrl,
-				dimRatio,
-				overlayColor.color
-			);
-			setAttributes( {
-				isDark: isDarkSetting,
-			} );
-		}
-		if ( useFeaturedImage ) {
-			setIsDark();
-		}
-		// We only ever want to run this effect if the mediaUrl changes.
-		// All other changes to the isDark state are handled in the appropriate event handlers.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ mediaUrl ] );
 
 	// instead of destructuring the attributes
 	// we define the url and background type
@@ -151,15 +134,16 @@ function CoverEdit( {
 	const setMedia = attributesFromMedia( setAttributes, dimRatio );
 
 	const onSelectMedia = async ( newMedia ) => {
-		await setMedia( newMedia );
+		// Only pass the url to getCoverIsDark if the media is an image as video is not handled.
+		const newUrl = newMedia?.type === 'image' ? newMedia.url : undefined;
+		const averageBackgroundColor = await getAverageMediaColor( newUrl );
+		setAverageMediaColor( averageBackgroundColor );
+		await setMedia( newMedia, averageBackgroundColor );
 	};
 
 	const onClearMedia = async () => {
-		const isDarkSetting = await getCoverIsDark(
-			undefined,
-			dimRatio,
-			overlayColor.color
-		);
+		setAverageMediaColor( undefined );
+		const isDarkSetting = getCoverIsDark( dimRatio, overlayColor.color );
 		setAttributes( {
 			url: undefined,
 			id: undefined,
@@ -173,7 +157,11 @@ function CoverEdit( {
 	};
 
 	const onSetOverlayColor = async ( colorValue ) => {
-		const isDarkSetting = await getCoverIsDark( url, dimRatio, colorValue );
+		const isDarkSetting = getCoverIsDark(
+			dimRatio,
+			colorValue,
+			averageMediaColor
+		);
 		setOverlayColor( colorValue );
 		__unstableMarkNextChangeAsNotPersistent();
 		setAttributes( {
@@ -182,10 +170,10 @@ function CoverEdit( {
 	};
 
 	const onUpdateDimRatio = async ( newDimRatio ) => {
-		const isDarkSetting = await getCoverIsDark(
-			url,
+		const isDarkSetting = getCoverIsDark(
 			newDimRatio,
-			overlayColor.color
+			overlayColor.color,
+			averageMediaColor
 		);
 
 		setAttributes( {
@@ -278,9 +266,11 @@ function CoverEdit( {
 	};
 
 	const toggleUseFeaturedImage = async () => {
-		const isDarkSetting = await ( useFeaturedImage
-			? getCoverIsDark( undefined, dimRatio, overlayColor.color )
-			: getCoverIsDark( mediaUrl, dimRatio, overlayColor.color ) );
+		const isDarkSetting = getCoverIsDark(
+			dimRatio,
+			overlayColor.color,
+			averageMediaColor
+		);
 		setAttributes( {
 			id: undefined,
 			url: undefined,

@@ -42,7 +42,7 @@ export function dimRatioToClass( ratio ) {
 }
 
 export function attributesFromMedia( setAttributes, dimRatio ) {
-	return async ( media ) => {
+	return ( media, averageBackgroundColor ) => {
 		if ( ! media || ! media.url ) {
 			setAttributes( { url: undefined, id: undefined, isDark } );
 			return;
@@ -73,15 +73,7 @@ export function attributesFromMedia( setAttributes, dimRatio ) {
 			mediaType = media.type;
 		}
 
-		// Only pass the url to getCoverIsDark if the media is an image as video is not handled.
-		const newUrl = media?.type === 'image' ? media.url : undefined;
-		const customOverlayColor = await getAverageMediaColor( newUrl );
-
-		const isDark = await getCoverIsDark(
-			newUrl,
-			dimRatio,
-			customOverlayColor
-		);
+		const isDark = getCoverIsDark( dimRatio, averageBackgroundColor?.hex );
 
 		setAttributes( {
 			isDark,
@@ -90,7 +82,7 @@ export function attributesFromMedia( setAttributes, dimRatio ) {
 			id: media.id,
 			alt: media?.alt,
 			overlayColor: undefined,
-			customOverlayColor,
+			customOverlayColor: averageBackgroundColor?.hex,
 			backgroundType: mediaType,
 			focalPoint: undefined,
 			...( mediaType === VIDEO_BACKGROUND_TYPE
@@ -168,42 +160,28 @@ function retrieveFastAverageColor() {
  * See the comments below for more details about which aspects take priority when
  * calculating the relative darkness of the Cover.
  *
- * @param {string} url
  * @param {number} dimRatio
  * @param {string} overlayColor
+ * @param {Object} averageBackgroundColor
  * @return {Promise<boolean>} True if cover should be considered to be dark.
  */
-export async function getCoverIsDark( url, dimRatio = 50, overlayColor ) {
+export function getCoverIsDark(
+	dimRatio = 50,
+	overlayColor,
+	averageBackgroundColor = undefined
+) {
 	const overlay = colord( overlayColor )
 		.alpha( dimRatio / 100 )
 		.toRgb();
 
-	if ( url ) {
-		try {
-			const imgCrossOrigin = applyFilters(
-				'media.crossOrigin',
-				undefined,
-				url
-			);
-			const {
-				value: [ r, g, b, a ],
-			} = await retrieveFastAverageColor().getColorAsync( url, {
-				// Previously the default color was white, but that changed
-				// in v6.0.0 so it has to be manually set now.
-				defaultColor: [ 255, 255, 255, 255 ],
-				// Errors that come up don't reject the promise, so error
-				// logging has to be silenced with this option.
-				silent: process.env.NODE_ENV === 'production',
-				crossOrigin: imgCrossOrigin,
-			} );
-			// FAC uses 0-255 for alpha, but colord expects 0-1.
-			const media = { r, g, b, a: a / 255 };
-			const composite = compositeSourceOver( overlay, media );
-			return colord( composite ).isDark();
-		} catch ( error ) {
-			// If there's an error, just assume the image is dark.
-			return true;
-		}
+	if ( averageBackgroundColor ) {
+		const {
+			value: [ r, g, b, a ],
+		} = averageBackgroundColor;
+		// FAC uses 0-255 for alpha, but colord expects 0-1.
+		const media = { r, g, b, a: a / 255 };
+		const composite = compositeSourceOver( overlay, media );
+		return colord( composite ).isDark();
 	}
 
 	// Assume a white background because it isn't easy to get the actual
@@ -213,6 +191,12 @@ export async function getCoverIsDark( url, dimRatio = 50, overlayColor ) {
 	return colord( composite ).isDark();
 }
 
+/**
+ * This method evaluates the average color of a background image
+ *
+ * @param {string} url
+ * @return {object|null} Null the color can't be computed, or the color.
+ */
 export async function getAverageMediaColor( url ) {
 	if ( url ) {
 		try {
@@ -231,11 +215,11 @@ export async function getAverageMediaColor( url ) {
 				crossOrigin: imgCrossOrigin,
 			} );
 			// FAC uses 0-255 for alpha, but colord expects 0-1.
-			return color.hex;
+			return color;
 		} catch ( error ) {
 			// If there's an error, just assume the image is dark.
-			return undefined;
+			return null;
 		}
 	}
-	return undefined;
+	return null;
 }
