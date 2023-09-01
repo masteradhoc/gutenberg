@@ -1092,7 +1092,6 @@ export const withChildLayoutStyles = createHigherOrderComponent(
 	'withChildLayoutStyles'
 );
 
-
 addFilter(
 	'blocks.registerBlockType',
 	'core/layout/addAttribute',
