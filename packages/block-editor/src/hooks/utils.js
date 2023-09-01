@@ -167,6 +167,8 @@ export function useBlockSettings( name, parentLayout ) {
 	const isBackgroundEnabled = useSetting( 'color.background' );
 	const isLinkEnabled = useSetting( 'color.link' );
 	const isTextEnabled = useSetting( 'color.text' );
+	const isHeadingEnabled = useSetting( 'color.heading' );
+	const isButtonEnabled = useSetting( 'color.button' );
 
 	const rawSettings = useMemo( () => {
 		return {
@@ -194,6 +196,8 @@ export function useBlockSettings( name, parentLayout ) {
 				customDuotone,
 				background: isBackgroundEnabled,
 				link: isLinkEnabled,
+				heading: isHeadingEnabled,
+				button: isButtonEnabled,
 				text: isTextEnabled,
 			},
 			typography: {
