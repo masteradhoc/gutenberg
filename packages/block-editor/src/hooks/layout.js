@@ -31,6 +31,8 @@ import {
 	justifyLeft,
 	justifyCenter,
 	justifyRight,
+	justifySpaceBetween,
+	justifyStretch,
 } from '@wordpress/icons';
 
 /**
@@ -46,6 +48,14 @@ import { useBlockEditingMode } from '../components/block-editing-mode';
 import { LAYOUT_DEFINITIONS } from '../layouts/definitions';
 import { kebabCase } from '../utils/object';
 import { useBlockSettings } from './utils';
+
+import {
+	alignTop,
+	alignCenter,
+	alignBottom,
+	spaceBetween,
+	alignStretch,
+} from '../components/block-vertical-alignment-control/icons';
 
 const layoutBlockSupportKey = 'layout';
 
@@ -258,12 +268,14 @@ function LayoutPanel( { setAttributes, attributes, name: blockName } ) {
 		horizontalAlignmentOptions.push( {
 			key: 'stretch',
 			value: 'stretch',
+			icon: justifyStretch,
 			name: __( 'Stretch' ),
 		} );
 	} else {
 		horizontalAlignmentOptions.push( {
 			key: 'space-between',
 			value: 'space-between',
+			icon: justifySpaceBetween,
 			name: __( 'Space Between' ),
 		} );
 	}
@@ -286,16 +298,19 @@ function LayoutPanel( { setAttributes, attributes, name: blockName } ) {
 		{
 			key: 'top',
 			value: 'top',
+			icon: alignTop,
 			name: __( 'Top' ),
 		},
 		{
 			key: 'center',
 			value: 'center',
+			icon: alignCenter,
 			name: __( 'Middle' ),
 		},
 		{
 			key: 'bottom',
 			value: 'bottom',
+			icon: alignBottom,
 			name: __( 'Bottom' ),
 		},
 	];
@@ -303,12 +318,14 @@ function LayoutPanel( { setAttributes, attributes, name: blockName } ) {
 		verticalAlignmentOptions.push( {
 			key: 'space-between',
 			value: 'space-between',
+			icon: spaceBetween,
 			name: __( 'Space Between' ),
 		} );
 	} else {
 		verticalAlignmentOptions.push( {
 			key: 'stretch',
 			value: 'stretch',
+			icon: alignStretch,
 			name: __( 'Stretch' ),
 		} );
 	}
