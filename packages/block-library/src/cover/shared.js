@@ -163,12 +163,12 @@ function retrieveFastAverageColor() {
  * @param {number} dimRatio
  * @param {string} overlayColor
  * @param {Object} averageBackgroundColor
- * @return {Promise<boolean>} True if cover should be considered to be dark.
+ * @return {boolean} True if cover should be considered to be dark.
  */
 export function getCoverIsDark(
 	dimRatio = 50,
 	overlayColor,
-	averageBackgroundColor = undefined
+	averageBackgroundColor
 ) {
 	const overlay = colord( overlayColor )
 		.alpha( dimRatio / 100 )
@@ -195,7 +195,7 @@ export function getCoverIsDark(
  * This method evaluates the average color of a background image
  *
  * @param {string} url
- * @return {object|null} Null the color can't be computed, or the color.
+ * @return {Promise<Object|null>} Null the color can't be computed, or the color.
  */
 export async function getAverageMediaColor( url ) {
 	if ( url ) {
