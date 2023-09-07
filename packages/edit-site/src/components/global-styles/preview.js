@@ -114,158 +114,164 @@ const StylesPreview = ( { label, isFocused, withHoverView } ) => {
 					onMouseLeave={ () => setIsHovered( false ) }
 					tabIndex={ -1 }
 				>
-					<EditorStyles styles={ editorStyles } />
-					<motion.div
-						style={ {
-							height: normalizedHeight * ratio,
-							width: '100%',
-							background: gradientValue ?? backgroundColor,
-							cursor: withHoverView ? 'pointer' : undefined,
-						} }
-						initial="start"
-						animate={
-							( isHovered || isFocused ) &&
-							! disableMotion &&
-							label
-								? 'hover'
-								: 'start'
-						}
-					>
+					<EditorStyles styles={ editorStyles }>
 						<motion.div
-							variants={ firstFrame }
 							style={ {
-								height: '100%',
-								overflow: 'hidden',
+								height: normalizedHeight * ratio,
+								width: '100%',
+								background: gradientValue ?? backgroundColor,
+								cursor: withHoverView ? 'pointer' : undefined,
 							} }
+							initial="start"
+							animate={
+								( isHovered || isFocused ) &&
+								! disableMotion &&
+								label
+									? 'hover'
+									: 'start'
+							}
 						>
-							<HStack
-								spacing={ 10 * ratio }
-								justify="center"
+							<motion.div
+								variants={ firstFrame }
 								style={ {
 									height: '100%',
 									overflow: 'hidden',
 								} }
 							>
-								<motion.div
+								<HStack
+									spacing={ 10 * ratio }
+									justify="center"
 									style={ {
-										fontFamily: headingFontFamily,
-										fontSize: 65 * ratio,
-										color: headingColor,
-										fontWeight: headingFontWeight,
+										height: '100%',
+										overflow: 'hidden',
 									} }
-									animate={ { scale: 1, opacity: 1 } }
-									initial={ { scale: 0.1, opacity: 0 } }
-									transition={ { delay: 0.3, type: 'tween' } }
 								>
-									Aa
-								</motion.div>
-								<VStack spacing={ 4 * ratio }>
-									{ highlightedColors.map(
-										( { slug, color }, index ) => (
-											<motion.div
-												key={ slug }
-												style={ {
-													height:
-														normalizedColorSwatchSize *
-														ratio,
-													width:
-														normalizedColorSwatchSize *
-														ratio,
-													background: color,
-													borderRadius:
-														( normalizedColorSwatchSize *
-															ratio ) /
-														2,
-												} }
-												animate={ {
-													scale: 1,
-													opacity: 1,
-												} }
-												initial={ {
-													scale: 0.1,
-													opacity: 0,
-												} }
-												transition={ {
-													delay:
-														index === 1 ? 0.2 : 0.1,
-												} }
-											/>
-										)
-									) }
-								</VStack>
-							</HStack>
-						</motion.div>
-						<motion.div
-							variants={ withHoverView && midFrame }
-							style={ {
-								height: '100%',
-								width: '100%',
-								position: 'absolute',
-								top: 0,
-								overflow: 'hidden',
-								filter: 'blur(60px)',
-								opacity: 0.1,
-							} }
-						>
-							<HStack
-								spacing={ 0 }
-								justify="flex-start"
-								style={ {
-									height: '100%',
-									overflow: 'hidden',
-								} }
-							>
-								{ paletteColors
-									.slice( 0, 4 )
-									.map( ( { color }, index ) => (
-										<div
-											key={ index }
-											style={ {
-												height: '100%',
-												background: color,
-												flexGrow: 1,
-											} }
-										/>
-									) ) }
-							</HStack>
-						</motion.div>
-						<motion.div
-							variants={ secondFrame }
-							style={ {
-								height: '100%',
-								width: '100%',
-								overflow: 'hidden',
-								position: 'absolute',
-								top: 0,
-							} }
-						>
-							<VStack
-								spacing={ 3 * ratio }
-								justify="center"
-								style={ {
-									height: '100%',
-									overflow: 'hidden',
-									padding: 10 * ratio,
-									boxSizing: 'border-box',
-								} }
-							>
-								{ label && (
-									<div
+									<motion.div
 										style={ {
-											fontSize: 40 * ratio,
 											fontFamily: headingFontFamily,
+											fontSize: 65 * ratio,
 											color: headingColor,
 											fontWeight: headingFontWeight,
-											lineHeight: '1em',
-											textAlign: 'center',
+										} }
+										animate={ { scale: 1, opacity: 1 } }
+										initial={ { scale: 0.1, opacity: 0 } }
+										transition={ {
+											delay: 0.3,
+											type: 'tween',
 										} }
 									>
-										{ label }
-									</div>
-								) }
-							</VStack>
+										Aa
+									</motion.div>
+									<VStack spacing={ 4 * ratio }>
+										{ highlightedColors.map(
+											( { slug, color }, index ) => (
+												<motion.div
+													key={ slug }
+													style={ {
+														height:
+															normalizedColorSwatchSize *
+															ratio,
+														width:
+															normalizedColorSwatchSize *
+															ratio,
+														background: color,
+														borderRadius:
+															( normalizedColorSwatchSize *
+																ratio ) /
+															2,
+													} }
+													animate={ {
+														scale: 1,
+														opacity: 1,
+													} }
+													initial={ {
+														scale: 0.1,
+														opacity: 0,
+													} }
+													transition={ {
+														delay:
+															index === 1
+																? 0.2
+																: 0.1,
+													} }
+												/>
+											)
+										) }
+									</VStack>
+								</HStack>
+							</motion.div>
+							<motion.div
+								variants={ withHoverView && midFrame }
+								style={ {
+									height: '100%',
+									width: '100%',
+									position: 'absolute',
+									top: 0,
+									overflow: 'hidden',
+									filter: 'blur(60px)',
+									opacity: 0.1,
+								} }
+							>
+								<HStack
+									spacing={ 0 }
+									justify="flex-start"
+									style={ {
+										height: '100%',
+										overflow: 'hidden',
+									} }
+								>
+									{ paletteColors
+										.slice( 0, 4 )
+										.map( ( { color }, index ) => (
+											<div
+												key={ index }
+												style={ {
+													height: '100%',
+													background: color,
+													flexGrow: 1,
+												} }
+											/>
+										) ) }
+								</HStack>
+							</motion.div>
+							<motion.div
+								variants={ secondFrame }
+								style={ {
+									height: '100%',
+									width: '100%',
+									overflow: 'hidden',
+									position: 'absolute',
+									top: 0,
+								} }
+							>
+								<VStack
+									spacing={ 3 * ratio }
+									justify="center"
+									style={ {
+										height: '100%',
+										overflow: 'hidden',
+										padding: 10 * ratio,
+										boxSizing: 'border-box',
+									} }
+								>
+									{ label && (
+										<div
+											style={ {
+												fontSize: 40 * ratio,
+												fontFamily: headingFontFamily,
+												color: headingColor,
+												fontWeight: headingFontWeight,
+												lineHeight: '1em',
+												textAlign: 'center',
+											} }
+										>
+											{ label }
+										</div>
+									) }
+								</VStack>
+							</motion.div>
 						</motion.div>
-					</motion.div>
+					</EditorStyles>
 				</Iframe>
 			) }
 		</>

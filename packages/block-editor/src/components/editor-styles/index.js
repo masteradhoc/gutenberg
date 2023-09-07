@@ -9,7 +9,12 @@ import a11yPlugin from 'colord/plugins/a11y';
  * WordPress dependencies
  */
 import { SVG } from '@wordpress/components';
-import { useCallback, useMemo } from '@wordpress/element';
+import {
+	useCallback,
+	useMemo,
+	createContext,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -18,6 +23,8 @@ import transformStyles from '../../utils/transform-styles';
 
 const EDITOR_STYLES_SELECTOR = '.editor-styles-wrapper';
 extend( [ namesPlugin, a11yPlugin ] );
+
+export const updateStyleContext = createContext();
 
 function useDarkThemeBodyClassName( styles ) {
 	return useCallback(
@@ -67,11 +74,42 @@ function useDarkThemeBodyClassName( styles ) {
 	);
 }
 
-export default function EditorStyles( { styles } ) {
-	const stylesArray = useMemo(
-		() => Object.values( styles ?? [] ),
-		[ styles ]
-	);
+export default function EditorStyles( { styles, children } ) {
+	const [ overrides, setOverrides ] = useState( [] );
+	const updateStyle = useCallback( ( style ) => {
+		setOverrides( ( _overrides ) => {
+			const index = _overrides.findIndex(
+				( override ) => override.id === style.id
+			);
+			if ( index === -1 ) {
+				return [ ..._overrides, style ];
+			}
+			return [
+				..._overrides.slice( 0, index ),
+				style,
+				..._overrides.slice( index + 1 ),
+			];
+		} );
+		return () => {
+			setOverrides( ( _overrides ) =>
+				_overrides.filter( ( override ) => override.id !== style.id )
+			);
+		};
+	}, [] );
+	const stylesArray = useMemo( () => {
+		const _styles = Object.values( styles ?? [] );
+
+		for ( const override of overrides ) {
+			const index = _styles.findIndex( ( { id } ) => id === override.id );
+			if ( index === -1 ) {
+				_styles.push( override );
+			} else {
+				_styles[ index ] = override;
+			}
+		}
+
+		return _styles;
+	}, [ styles, overrides ] );
 	const transformedStyles = useMemo(
 		() =>
 			transformStyles(
@@ -91,7 +129,7 @@ export default function EditorStyles( { styles } ) {
 	);
 
 	return (
-		<>
+		<updateStyleContext.Provider value={ updateStyle }>
 			{ /* Use an empty style element to have a document reference,
 			     but this could be any element. */ }
 			<style ref={ useDarkThemeBodyClassName( stylesArray ) } />
@@ -112,6 +150,7 @@ export default function EditorStyles( { styles } ) {
 				} }
 				dangerouslySetInnerHTML={ { __html: transformedSvgs } }
 			/>
-		</>
+			{ children }
+		</updateStyleContext.Provider>
 	);
 }
