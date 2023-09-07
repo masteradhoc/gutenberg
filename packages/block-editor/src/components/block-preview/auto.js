@@ -108,10 +108,9 @@ function ScaledBlockPreview( {
 							: minHeight,
 				} }
 			>
-				<EditorStyles styles={ editorStyles }>
-					{ contentResizeListener }
-					<MemoizedBlockList renderAppender={ false } />
-				</EditorStyles>
+				<EditorStyles styles={ editorStyles } />
+				{ contentResizeListener }
+				<MemoizedBlockList renderAppender={ false } />
 			</Iframe>
 		</Disabled>
 	);

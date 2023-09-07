@@ -286,7 +286,7 @@ export default function VisualEditor( { styles } ) {
 						: '' ),
 			},
 		],
-		[ styles, paddingBottom ]
+		[ styles ]
 	);
 
 	// Add some styles for alignwide/alignfull Post Content and its children.

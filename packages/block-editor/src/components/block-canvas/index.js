@@ -31,20 +31,19 @@ export function ExperimentalBlockCanvas( {
 		clearerRef,
 	] );
 
-	const styledContent = (
-		<EditorStyles styles={ styles }>{ children }</EditorStyles>
-	);
-
 	if ( ! shouldIframe ) {
 		return (
-			<WritingFlow
-				ref={ contentRef }
-				className="editor-styles-wrapper"
-				tabIndex={ -1 }
-				style={ { height } }
-			>
-				{ styledContent }
-			</WritingFlow>
+			<>
+				<EditorStyles styles={ styles } />
+				<WritingFlow
+					ref={ contentRef }
+					className="editor-styles-wrapper"
+					tabIndex={ -1 }
+					style={ { height } }
+				>
+					{ children }
+				</WritingFlow>
+			</>
 		);
 	}
 
@@ -60,7 +59,8 @@ export function ExperimentalBlockCanvas( {
 			} }
 			name="editor-canvas"
 		>
-			{ styledContent }
+			<EditorStyles styles={ styles } />
+			{ children }
 		</Iframe>
 	);
 }
