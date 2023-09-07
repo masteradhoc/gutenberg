@@ -31,6 +31,10 @@ export function ExperimentalBlockCanvas( {
 		clearerRef,
 	] );
 
+	const styledContent = (
+		<EditorStyles styles={ styles }>{ children }</EditorStyles>
+	);
+
 	if ( ! shouldIframe ) {
 		return (
 			<WritingFlow
@@ -39,9 +43,7 @@ export function ExperimentalBlockCanvas( {
 				tabIndex={ -1 }
 				style={ { height } }
 			>
-				<EditorStyles styles={ styles }>
-					{ children }
-				</EditorStyles>
+				{ styledContent }
 			</WritingFlow>
 		);
 	}
@@ -58,9 +60,7 @@ export function ExperimentalBlockCanvas( {
 			} }
 			name="editor-canvas"
 		>
-			<EditorStyles styles={ styles }>
-				{ children }
-			</EditorStyles>
+			{ styledContent }
 		</Iframe>
 	);
 }
