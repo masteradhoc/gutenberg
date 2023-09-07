@@ -24,7 +24,7 @@ import transformStyles from '../../utils/transform-styles';
 const EDITOR_STYLES_SELECTOR = '.editor-styles-wrapper';
 extend( [ namesPlugin, a11yPlugin ] );
 
-export const updateStyleContext = createContext();
+export const updateStyleContext = createContext( () => {} );
 
 function useDarkThemeBodyClassName( styles ) {
 	return useCallback(
@@ -96,7 +96,7 @@ export default function EditorStyles( { styles, children } ) {
 			);
 		};
 	}, [] );
-	const stylesArray = useMemo( () => {
+	const [ transformedStyles, transformedSvgs ] = useMemo( () => {
 		const _styles = Object.values( styles ?? [] );
 
 		for ( const override of overrides ) {
@@ -108,31 +108,23 @@ export default function EditorStyles( { styles, children } ) {
 			}
 		}
 
-		return _styles;
-	}, [ styles, overrides ] );
-	const transformedStyles = useMemo(
-		() =>
+		return [
 			transformStyles(
-				stylesArray.filter( ( style ) => style?.css ),
+				_styles.filter( ( style ) => style?.css ),
 				EDITOR_STYLES_SELECTOR
 			),
-		[ stylesArray ]
-	);
-
-	const transformedSvgs = useMemo(
-		() =>
-			stylesArray
+			_styles
 				.filter( ( style ) => style.__unstableType === 'svgs' )
 				.map( ( style ) => style.assets )
 				.join( '' ),
-		[ stylesArray ]
-	);
+		];
+	}, [ styles, overrides ] );
 
 	return (
 		<updateStyleContext.Provider value={ updateStyle }>
 			{ /* Use an empty style element to have a document reference,
 			     but this could be any element. */ }
-			<style ref={ useDarkThemeBodyClassName( stylesArray ) } />
+			<style ref={ useDarkThemeBodyClassName( transformedStyles ) } />
 			{ transformedStyles.map( ( css, index ) => (
 				<style key={ index }>{ css }</style>
 			) ) }
