@@ -15,7 +15,8 @@ import {
 } from '@wordpress/blocks';
 import { createHigherOrderComponent, useInstanceId } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
-import { useMemo, useEffect, useContext } from '@wordpress/element';
+import { useMemo, useEffect } from '@wordpress/element';
+import { useDispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -36,7 +37,8 @@ import { scopeSelector } from '../components/global-styles/utils';
 import { useBlockSettings } from './utils';
 import { default as StylesFiltersPanel } from '../components/global-styles/filters-panel';
 import { useBlockEditingMode } from '../components/block-editing-mode';
-import { updateStyleContext } from '../components/editor-styles';
+import { store as blockEditorStore } from '../store';
+import { unlock } from '../lock-unlock';
 
 const EMPTY_ARRAY = [];
 
@@ -272,31 +274,38 @@ function DuotoneStyles( {
 
 	const isValidFilter = Array.isArray( colors ) || colors === 'unset';
 
-	const updateStyle = useContext( updateStyleContext );
+	const { setStyleOverride, deleteStyleOverride } = unlock(
+		useDispatch( blockEditorStore )
+	);
 
 	useEffect( () => {
 		if ( ! isValidFilter ) return;
 
-		const clearStyle = updateStyle( {
-			id: filterId,
+		setStyleOverride( filterId, {
 			css:
 				colors !== 'unset'
 					? getDuotoneStylesheet( selector, filterId )
 					: getDuotoneUnsetStylesheet( selector ),
 			__unstableType: 'presets',
 		} );
-		const clearFilter = updateStyle( {
-			id: `duotone-${ filterId }`,
+		setStyleOverride( `duotone-${ filterId }`, {
 			assets:
 				colors !== 'unset' ? getDuotoneFilter( filterId, colors ) : '',
 			__unstableType: 'svgs',
 		} );
 
 		return () => {
-			clearStyle();
-			clearFilter();
+			deleteStyleOverride( filterId );
+			deleteStyleOverride( `duotone-${ filterId }` );
 		};
-	}, [ isValidFilter, colors, selector, filterId, updateStyle ] );
+	}, [
+		isValidFilter,
+		colors,
+		selector,
+		filterId,
+		setStyleOverride,
+		deleteStyleOverride,
+	] );
 
 	return null;
 }

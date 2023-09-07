@@ -9,17 +9,15 @@ import a11yPlugin from 'colord/plugins/a11y';
  * WordPress dependencies
  */
 import { SVG } from '@wordpress/components';
-import {
-	useCallback,
-	useMemo,
-	createContext,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useMemo, createContext } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import transformStyles from '../../utils/transform-styles';
+import { store as blockEditorStore } from '../../store';
+import { unlock } from '../../lock-unlock';
 
 const EDITOR_STYLES_SELECTOR = '.editor-styles-wrapper';
 extend( [ namesPlugin, a11yPlugin ] );
@@ -75,36 +73,20 @@ function useDarkThemeBodyClassName( styles ) {
 }
 
 export default function EditorStyles( { styles, children } ) {
-	const [ overrides, setOverrides ] = useState( [] );
-	const updateStyle = useCallback( ( style ) => {
-		setOverrides( ( _overrides ) => {
-			const index = _overrides.findIndex(
-				( override ) => override.id === style.id
-			);
-			if ( index === -1 ) {
-				return [ ..._overrides, style ];
-			}
-			return [
-				..._overrides.slice( 0, index ),
-				style,
-				..._overrides.slice( index + 1 ),
-			];
-		} );
-		return () => {
-			setOverrides( ( _overrides ) =>
-				_overrides.filter( ( override ) => override.id !== style.id )
-			);
-		};
-	}, [] );
+	const overrides = useSelect(
+		( select ) => unlock( select( blockEditorStore ) ).getStyleOverrides(),
+		[]
+	);
 	const [ transformedStyles, transformedSvgs ] = useMemo( () => {
 		const _styles = Object.values( styles ?? [] );
 
-		for ( const override of overrides ) {
-			const index = _styles.findIndex( ( { id } ) => id === override.id );
+		for ( const [ id, override ] of overrides ) {
+			const index = _styles.findIndex( ( { id: _id } ) => id === _id );
+			const overrideWithId = { ...override, id };
 			if ( index === -1 ) {
-				_styles.push( override );
+				_styles.push( overrideWithId );
 			} else {
-				_styles[ index ] = override;
+				_styles[ index ] = overrideWithId;
 			}
 		}
 
@@ -121,7 +103,7 @@ export default function EditorStyles( { styles, children } ) {
 	}, [ styles, overrides ] );
 
 	return (
-		<updateStyleContext.Provider value={ updateStyle }>
+		<>
 			{ /* Use an empty style element to have a document reference,
 			     but this could be any element. */ }
 			<style ref={ useDarkThemeBodyClassName( transformedStyles ) } />
@@ -143,6 +125,6 @@ export default function EditorStyles( { styles, children } ) {
 				dangerouslySetInnerHTML={ { __html: transformedSvgs } }
 			/>
 			{ children }
-		</updateStyleContext.Provider>
+		</>
 	);
 }
