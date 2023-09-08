@@ -2,6 +2,8 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import downloadjs from 'downloadjs';
+import { paramCase as kebabCase } from 'change-case';
 
 /**
  * WordPress dependencies
@@ -97,6 +99,20 @@ function GridItem( { categoryId, item, ...props } ) {
 	};
 	const deleteItem = () =>
 		isTemplatePart ? removeTemplate( item ) : deletePattern();
+	const exportAsJSON = () => {
+		const json = {
+			__file: item.type,
+			title: item.title,
+			content: item.reusableBlock.content.raw,
+			syncStatus: item.reusableBlock.wp_pattern_sync_status,
+		};
+
+		downloadjs(
+			JSON.stringify( json, null, 2 ),
+			`${ kebabCase( item.title ) }.json`,
+			'application/json'
+		);
+	};
 
 	// Only custom patterns or custom template parts can be renamed or deleted.
 	const isCustomPattern =
@@ -252,6 +268,12 @@ function GridItem( { categoryId, item, ...props } ) {
 										: __( 'Duplicate' )
 								}
 							/>
+							{ item.type === USER_PATTERNS && (
+								<MenuItem onClick={ () => exportAsJSON() }>
+									{ __( 'Export as JSON' ) }
+								</MenuItem>
+							) }
+
 							{ isCustomPattern && (
 								<MenuItem
 									isDestructive={ ! hasThemeFile }

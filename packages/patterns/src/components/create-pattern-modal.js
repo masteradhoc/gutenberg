@@ -29,7 +29,7 @@ import { store } from '../store';
 export default function CreatePatternModal( {
 	onSuccess,
 	onError,
-	clientIds,
+	content,
 	onClose,
 	className = 'patterns-menu-items__convert-modal',
 } ) {
@@ -44,7 +44,7 @@ export default function CreatePatternModal( {
 				const newPattern = await createPattern(
 					patternTitle,
 					sync,
-					clientIds
+					content
 				);
 				onSuccess( {
 					pattern: newPattern,
@@ -58,7 +58,7 @@ export default function CreatePatternModal( {
 				onError();
 			}
 		},
-		[ createPattern, clientIds, onSuccess, createErrorNotice, onError ]
+		[ createPattern, content, onSuccess, createErrorNotice, onError ]
 	);
 	return (
 		<Modal

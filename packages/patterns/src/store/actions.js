@@ -2,20 +2,20 @@
  * WordPress dependencies
  */
 
-import { parse, serialize, createBlock } from '@wordpress/blocks';
+import { parse } from '@wordpress/blocks';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 
 /**
  * Returns a generator converting one or more static blocks into a pattern, or creating a new empty pattern.
  *
- * @param {string}             title     Pattern title.
- * @param {'full'|'unsynced'}  syncType  They way block is synced, 'full' or 'unsynced'.
- * @param {string[]|undefined} clientIds Optional client IDs of blocks to convert to pattern.
+ * @param {string}            title     Pattern title.
+ * @param {'full'|'unsynced'} syncType  They way block is synced, 'full' or 'unsynced'.
+ * @param {string}            [content] Optional serialized content of blocks to convert to pattern.
  */
 export const __experimentalCreatePattern =
-	( title, syncType, clientIds ) =>
-	async ( { registry, dispatch } ) => {
+	( title, syncType, content ) =>
+	async ( { registry } ) => {
 		const meta =
 			syncType === 'unsynced'
 				? {
@@ -25,13 +25,7 @@ export const __experimentalCreatePattern =
 
 		const reusableBlock = {
 			title,
-			content: clientIds
-				? serialize(
-						registry
-							.select( blockEditorStore )
-							.getBlocksByClientId( clientIds )
-				  )
-				: undefined,
+			content,
 			status: 'publish',
 			meta,
 		};
@@ -40,18 +34,43 @@ export const __experimentalCreatePattern =
 			.dispatch( coreStore )
 			.saveEntityRecord( 'postType', 'wp_block', reusableBlock );
 
-		if ( syncType === 'unsynced' || ! clientIds ) {
-			return updatedRecord;
+		return updatedRecord;
+	};
+
+/**
+ * Create a pattern from a JSON file.
+ * @param {File} file The JSON file instance of the pattern.
+ */
+export const __experimentalCreatePatternFromFile =
+	( file ) =>
+	async ( { dispatch } ) => {
+		const fileContent = await file.text();
+		/** @type {import('./types').PatternJSON} */
+		let parsedContent;
+		try {
+			parsedContent = JSON.parse( fileContent );
+		} catch ( e ) {
+			throw new Error( 'Invalid JSON file' );
+		}
+		if (
+			parsedContent.__file !== 'wp_block' ||
+			! parsedContent.title ||
+			! parsedContent.content ||
+			typeof parsedContent.title !== 'string' ||
+			typeof parsedContent.content !== 'string' ||
+			( parsedContent.syncStatus &&
+				typeof parsedContent.syncStatus !== 'string' )
+		) {
+			throw new Error( 'Invalid Pattern JSON file' );
 		}
 
-		const newBlock = createBlock( 'core/block', {
-			ref: updatedRecord.id,
-		} );
-		registry
-			.dispatch( blockEditorStore )
-			.replaceBlocks( clientIds, newBlock );
-		dispatch.__experimentalSetEditingPattern( newBlock.clientId, true );
-		return updatedRecord;
+		const pattern = await dispatch.__experimentalCreatePattern(
+			parsedContent.title,
+			parsedContent.syncStatus,
+			parsedContent.content
+		);
+
+		return pattern;
 	};
 
 /**
