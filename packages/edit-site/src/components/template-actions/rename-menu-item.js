@@ -16,8 +16,8 @@ import { store as coreStore } from '@wordpress/core-data';
 import { store as noticesStore } from '@wordpress/notices';
 import { decodeEntities } from '@wordpress/html-entities';
 
-export default function RenameMenuItem( { template, onClose } ) {
-	const title = decodeEntities( template.title.rendered );
+export default function RenameMenuItem( { item, onClose } ) {
+	const title = decodeEntities( item.title.rendered );
 	const [ editedTitle, setEditedTitle ] = useState( title );
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
 
@@ -28,7 +28,7 @@ export default function RenameMenuItem( { template, onClose } ) {
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
 
-	if ( template.type === 'wp_template' && ! template.is_custom ) {
+	if ( item.type === 'wp_template' && ! item.is_custom ) {
 		return null;
 	}
 
@@ -36,7 +36,7 @@ export default function RenameMenuItem( { template, onClose } ) {
 		event.preventDefault();
 
 		try {
-			await editEntityRecord( 'postType', template.type, template.id, {
+			await editEntityRecord( 'postType', item.type, item.id, {
 				title: editedTitle,
 			} );
 
@@ -48,8 +48,8 @@ export default function RenameMenuItem( { template, onClose } ) {
 			// Persist edited entity.
 			await saveSpecifiedEntityEdits(
 				'postType',
-				template.type,
-				template.id,
+				item.type,
+				item.id,
 				[ 'title' ], // Only save title to avoid persisting other edits.
 				{
 					throwOnError: true,

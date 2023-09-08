@@ -14,14 +14,16 @@ import {
 import { moreVertical } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 import { decodeEntities } from '@wordpress/html-entities';
+import { store as reusableBlocksStore } from '@wordpress/reusable-blocks';
 
 /**
  * Internal dependencies
  */
 import { store as editSiteStore } from '../../store';
 import isTemplateRemovable from '../../utils/is-template-removable';
-import isTemplateRevertable from '../../utils/is-template-revertable';
-import RenameMenuItem from './rename-menu-item';
+// import isTemplateRevertable from '../../utils/is-template-revertable';
+import RenameTemplate from './rename-menu-item';
+import RenamePattern from '../page-patterns/rename-menu-item';
 
 export default function TemplateActions( {
 	postType,
@@ -39,27 +41,78 @@ export default function TemplateActions( {
 	const { saveEditedEntityRecord } = useDispatch( coreStore );
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
+	const { __experimentalDeleteReusableBlock } =
+		useDispatch( reusableBlocksStore );
+	// @TODO isRemovable and isRevertable do the same thing. Consolidate.
 	const isRemovable = isTemplateRemovable( template );
-	const isRevertable = isTemplateRevertable( template );
+	// const isRevertable = isTemplateRevertable( template );
+	const isUserPattern = template?.type === 'wp_block';
+	// Only custom patterns or custom template parts can be renamed or deleted.
+	// @TODO Maybe abstract constants and utils in packages/edit-site/src/components/page-patterns/utils.js.
+	const isTemplate =
+		template?.type === 'wp_template' ||
+		template?.type === 'wp_template_part';
 
-	if ( ! isRemovable && ! isRevertable ) {
+	if ( ! isTemplate && ! isRemovable( template ) && ! isUserPattern ) {
 		return null;
 	}
 
-	async function revertAndSaveTemplate() {
+	const isEditable = isUserPattern || isTemplateRemovable( template );
+
+	/*
+	 * @TODO This is because packages/edit-site/src/components/template-actions/rename-menu-item.js
+	 * and packages/edit-site/src/components/page-patterns/rename-menu-item.js are slighly different.
+	 * They should be consolidated.
+	 */
+	const record = isUserPattern
+		? {
+				...template,
+				title: template?.title?.raw,
+		  }
+		: template;
+	const RenameComponent = isUserPattern ? RenamePattern : RenameTemplate;
+
+	const deletePattern = async ( pattern ) => {
+		try {
+			await __experimentalDeleteReusableBlock( pattern.id );
+			createSuccessNotice(
+				sprintf(
+					// translators: %s: The pattern's title e.g. 'Call to action'.
+					__( '"%s" deleted.' ),
+					pattern.title
+				),
+				{ type: 'snackbar', id: 'edit-site-patterns-success' }
+			);
+		} catch ( error ) {
+			const errorMessage =
+				error.message && error.code !== 'unknown_error'
+					? error.message
+					: __( 'An error occurred while deleting the pattern.' );
+			createErrorNotice( errorMessage, {
+				type: 'snackbar',
+				id: 'edit-site-patterns-error',
+			} );
+		}
+	};
+
+	const deleteItem = async ( item ) => {
+		if ( isUserPattern ) {
+			removeTemplate( item );
+		} else if ( isTemplateRemovable( item ) ) {
+			deletePattern( item );
+		}
+	};
+
+	async function revertAndSaveTemplate( item ) {
 		try {
 			await revertTemplate( template, { allowUndo: false } );
-			await saveEditedEntityRecord(
-				'postType',
-				template.type,
-				template.id
-			);
+			await saveEditedEntityRecord( 'postType', item.type, item.id );
 
 			createSuccessNotice(
 				sprintf(
 					/* translators: The template/part's name. */
 					__( '"%s" reverted.' ),
-					decodeEntities( template.title.rendered )
+					decodeEntities( item.title.rendered )
 				),
 				{
 					type: 'snackbar',
@@ -85,29 +138,31 @@ export default function TemplateActions( {
 		>
 			{ ( { onClose } ) => (
 				<MenuGroup>
-					{ isRemovable && (
+					{ isEditable && (
 						<>
-							<RenameMenuItem
-								template={ template }
+							<RenameComponent
+								item={ record }
 								onClose={ onClose }
 							/>
+
 							<DeleteMenuItem
 								onRemove={ () => {
-									removeTemplate( template );
+									deleteItem( record );
 									onRemove?.();
 									onClose();
 								} }
-								title={ template.title.rendered }
+								title={ record.title.rendered || record.title }
 							/>
 						</>
 					) }
-					{ isRevertable && (
+
+					{ isRemovable && (
 						<MenuItem
 							info={ __(
 								'Use the template as supplied by the theme.'
 							) }
 							onClick={ () => {
-								revertAndSaveTemplate();
+								revertAndSaveTemplate( record );
 								onClose();
 							} }
 						>
