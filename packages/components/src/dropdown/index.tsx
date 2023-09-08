@@ -7,7 +7,7 @@ import type { ForwardedRef } from 'react';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { useMergeRefs } from '@wordpress/compose';
 import deprecated from '@wordpress/deprecated';
 
@@ -15,24 +15,9 @@ import deprecated from '@wordpress/deprecated';
  * Internal dependencies
  */
 import { contextConnect, useContextSystem } from '../ui/context';
+import { useControlledValue } from '../utils/hooks';
 import Popover from '../popover';
 import type { DropdownProps, DropdownInternalContext } from './types';
-
-function useObservableState(
-	initialState: boolean,
-	onStateChange?: ( newState: boolean ) => void
-) {
-	const [ state, setState ] = useState( initialState );
-	return [
-		state,
-		( value: boolean ) => {
-			setState( value );
-			if ( onStateChange ) {
-				onStateChange( value );
-			}
-		},
-	] as const;
-}
 
 const UnconnectedDropdown = (
 	props: DropdownProps,
@@ -50,7 +35,9 @@ const UnconnectedDropdown = (
 		onClose,
 		onToggle,
 		style,
-		open: openProp,
+
+		open,
+		defaultOpen,
 
 		// Deprecated props
 		position,
@@ -75,23 +62,11 @@ const UnconnectedDropdown = (
 	const [ fallbackPopoverAnchor, setFallbackPopoverAnchor ] =
 		useState< HTMLDivElement | null >( null );
 	const containerRef = useRef< HTMLDivElement >();
-	const [ isOpenState, setIsOpen ] = useObservableState( false, onToggle );
-
-	// Allow provided `isOpen` prop to override internal state.
-	const isOpen = openProp ?? isOpenState;
-
-	useEffect(
-		() => () => {
-			if ( onToggle && isOpen ) {
-				onToggle( false );
-			}
-		},
-		[ onToggle, isOpen ]
-	);
-
-	function toggle() {
-		setIsOpen( ! isOpen );
-	}
+	const [ isOpen, setIsOpen ] = useControlledValue( {
+		defaultValue: defaultOpen,
+		value: open,
+		onChange: onToggle,
+	} );
 
 	/**
 	 * Closes the popover when focus leaves it unless the toggle was pressed or
@@ -122,7 +97,11 @@ const UnconnectedDropdown = (
 		setIsOpen( false );
 	}
 
-	const args = { isOpen, onToggle: toggle, onClose: close };
+	const args = {
+		isOpen: !! isOpen,
+		onToggle: () => setIsOpen( ! isOpen ),
+		onClose: close,
+	};
 	const popoverPropsHaveAnchor =
 		!! popoverProps?.anchor ||
 		// Note: `anchorRef`, `getAnchorRect` and `anchorRect` are deprecated and

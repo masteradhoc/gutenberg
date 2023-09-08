@@ -36,6 +36,10 @@ export type DropdownProps = {
 	 */
 	contentClassName?: string;
 	/**
+	 * The initial open state of the dropdown.
+	 */
+	defaultOpen?: boolean;
+	/**
 	 * Opt-in prop to show popovers fullscreen on mobile.
 	 *
 	 * @default false

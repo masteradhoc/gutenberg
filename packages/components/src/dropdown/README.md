@@ -68,6 +68,12 @@ Set this to customize the text that is shown in the dropdown's header when it is
 
 -   Required: No
 
+### `defaultOpen`: `boolean`
+
+The initial open state of the dropdown.
+
+-   Required: No
+
 ### `open`: `boolean`
 
 Control whether the dropdown is open or not.
