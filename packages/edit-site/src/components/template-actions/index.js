@@ -21,7 +21,7 @@ import { store as reusableBlocksStore } from '@wordpress/reusable-blocks';
  */
 import { store as editSiteStore } from '../../store';
 import isTemplateRemovable from '../../utils/is-template-removable';
-// import isTemplateRevertable from '../../utils/is-template-revertable';
+import isTemplateRevertable from '../../utils/is-template-revertable';
 import RenameTemplate from './rename-menu-item';
 import RenamePattern from '../page-patterns/rename-menu-item';
 
@@ -43,9 +43,8 @@ export default function TemplateActions( {
 		useDispatch( noticesStore );
 	const { __experimentalDeleteReusableBlock } =
 		useDispatch( reusableBlocksStore );
-	// @TODO isRemovable and isRevertable do the same thing. Consolidate.
 	const isRemovable = isTemplateRemovable( template );
-	// const isRevertable = isTemplateRevertable( template );
+
 	const isUserPattern = template?.type === 'wp_block';
 	// Only custom patterns or custom template parts can be renamed or deleted.
 	// @TODO Maybe abstract constants and utils in packages/edit-site/src/components/page-patterns/utils.js.
@@ -57,7 +56,7 @@ export default function TemplateActions( {
 		return null;
 	}
 
-	const isEditable = isUserPattern || isTemplateRemovable( template );
+	const isEditable = isUserPattern || isRemovable;
 
 	/*
 	 * @TODO This is because packages/edit-site/src/components/template-actions/rename-menu-item.js
@@ -156,7 +155,7 @@ export default function TemplateActions( {
 						</>
 					) }
 
-					{ isRemovable && (
+					{ isTemplateRevertable( record ) && (
 						<MenuItem
 							info={ __(
 								'Use the template as supplied by the theme.'
