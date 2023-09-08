@@ -53,7 +53,7 @@ export default function TemplateActions( {
 		template?.type === 'wp_template' ||
 		template?.type === 'wp_template_part';
 
-	if ( ! isTemplate && ! isRemovable( template ) && ! isUserPattern ) {
+	if ( ! isTemplate && ! isRemovable && ! isUserPattern ) {
 		return null;
 	}
 
