@@ -17,7 +17,7 @@
 
 -   `PaletteEdit`: Fix padding in RTL languages ([#54034](https://github.com/WordPress/gutenberg/pull/54034)).
 -   `CircularOptionPicker`: make focus styles resilient to button size changes ([#54196](https://github.com/WordPress/gutenberg/pull/54196)).
-
+-   `PaletteEdit`: Don't discards colors with default name and slug ([#54332](https://github.com/WordPress/gutenberg/pull/54332)).
 
 ### Internal
 
