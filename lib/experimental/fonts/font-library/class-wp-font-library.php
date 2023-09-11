@@ -19,7 +19,6 @@ if ( class_exists( 'WP_Font_Library' ) ) {
  * @since 6.4.0
  */
 class WP_Font_Library {
-
 	/*
 	* As of PHP 8.1.12, which includes libmagic/file update to version 5.42,
 	* the expected mime type for WOFF files is 'font/woff'.
