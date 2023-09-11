@@ -72,7 +72,7 @@ function useDarkThemeBodyClassName( styles ) {
 	);
 }
 
-export default function EditorStyles( { styles, children } ) {
+export default function EditorStyles( { styles } ) {
 	const overrides = useSelect(
 		( select ) => unlock( select( blockEditorStore ) ).getStyleOverrides(),
 		[]
@@ -124,7 +124,6 @@ export default function EditorStyles( { styles, children } ) {
 				} }
 				dangerouslySetInnerHTML={ { __html: transformedSvgs } }
 			/>
-			{ children }
 		</>
 	);
 }
