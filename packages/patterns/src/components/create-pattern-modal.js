@@ -10,7 +10,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 
@@ -38,28 +38,26 @@ export default function CreatePatternModal( {
 	const { __experimentalCreatePattern: createPattern } = useDispatch( store );
 
 	const { createErrorNotice } = useDispatch( noticesStore );
-	const onCreate = useCallback(
-		async function ( patternTitle, sync ) {
-			try {
-				const newPattern = await createPattern(
-					patternTitle,
-					sync,
-					content
-				);
-				onSuccess( {
-					pattern: newPattern,
-					categoryId: USER_PATTERN_CATEGORY,
-				} );
-			} catch ( error ) {
-				createErrorNotice( error.message, {
-					type: 'snackbar',
-					id: 'convert-to-pattern-error',
-				} );
-				onError();
-			}
-		},
-		[ createPattern, content, onSuccess, createErrorNotice, onError ]
-	);
+	const onCreate = async function ( patternTitle, sync ) {
+		try {
+			const newPattern = await createPattern(
+				patternTitle,
+				sync,
+				typeof content === 'function' ? content() : content
+			);
+			onSuccess( {
+				pattern: newPattern,
+				categoryId: USER_PATTERN_CATEGORY,
+			} );
+		} catch ( error ) {
+			createErrorNotice( error.message, {
+				type: 'snackbar',
+				id: 'convert-to-pattern-error',
+			} );
+			onError();
+		}
+	};
+
 	return (
 		<Modal
 			title={ __( 'Create pattern' ) }
